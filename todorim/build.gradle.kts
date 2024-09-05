@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.library) apply false
     alias(libs.plugins.realm) apply false
+//    alias(libs.plugins.compose.compiler) apply false
 }

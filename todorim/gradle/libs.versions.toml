@@ -1,12 +1,12 @@
 [versions]
 agp = "8.5.2"
-kotlin = "2.0.20"
+kotlin = "1.9.24"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.6.1"
-activityCompose = "1.9.1"
+activity = "1.9.1"
 composeBom = "2024.08.00"
 library = "8.0.2"
 material = "1.11.0"
@@ -14,9 +14,9 @@ constraintlayout = "2.1.4"
 androidx-appcompat = "1.6.1"
 multidex = "2.0.1"
 #Dagger-Hilt
-hilt = "2.49"
-hilt-work = "1.1.0"
-hilt-compose = "1.1.0"
+hilt = "2.51.1"
+hilt-work = "1.2.0"
+hilt-compose = "1.2.0"
 # Compose
 navigation-compose = "2.7.6"
 protolite-well-known-types = "18.0.0"
@@ -33,7 +33,9 @@ core-splashscreen = "1.0.1"
 #KSP
 ksp = "1.9.20-1.0.14"
 #Realm
-realm = "2.0.0"
+realm = "1.16.0"
+#Work
+work = "2.7.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,7 +43,8 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -83,6 +86,9 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 #Realm
 realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm" }
 realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "realm" }
+realm-android = { group = "io.realm", name = "realm-gradle-plugin", version.ref = "realm" }
+#Work  >> Targeting S+ (version 31 and above) require PendingIntent Issues
+work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -91,4 +97,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 library = { id = "com.android.library", version.ref = "library" }
 realm = { id = "io.realm.kotlin", version.ref = "realm" }
+# Kotlin ver 2.0.0+
+#compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
 

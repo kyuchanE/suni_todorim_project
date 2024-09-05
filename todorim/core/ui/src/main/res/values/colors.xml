@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- ToDoRim Common Color -->
+    <color name="tdr_default">#FF39393E</color>
+    <color name="tdr_blue">#FF549CF5</color>
+    <color name="tdr_red">#FFA23036</color>
+    
+    <color name="gradient_start_1">#FF8EC5FC</color>
+    <color name="gradient_start_2">#FFFCCB90</color>
+    <color name="gradient_start_3">#FFFBC2EB</color>
+    <color name="gradient_start_4">#FFFFF6B7</color>
+    <color name="gradient_start_5">#FFF9D423</color>
+    <color name="gradient_start_6">#FF74EBD5</color>
+    <color name="gradient_start_7">#FF17EAD9</color>
+    <color name="gradient_start_8">#FFABDCFF</color>
+    <color name="gradient_start_9">#FF43CBFF</color>
+
+    <color name="gradient_end_1">#FFE0C3FC</color>
+    <color name="gradient_end_2">#FFD57EEA</color>
+    <color name="gradient_end_3">#FFA18CD1</color>
+    <color name="gradient_end_4">#FFF6416C</color>
+    <color name="gradient_end_5">#FFE14FAD</color>
+    <color name="gradient_end_6">#FF9FACE6</color>
+    <color name="gradient_end_7">#FF8A9BEA</color>
+    <color name="gradient_end_8">#FF0396FF</color>
+    <color name="gradient_end_9">#FF9708CC</color>
+    
+</resources>

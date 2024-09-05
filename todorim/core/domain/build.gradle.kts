@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.realm)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -35,6 +37,8 @@ android {
 
 dependencies {
 
+    implementation(projects.core.data)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -45,4 +49,12 @@ dependencies {
     // Realm
     implementation(libs.realm.base)
     implementation(libs.realm.sync)
+//    implementation(libs.realm.android)
+
+    // Dagger Hilt
+    implementation(libs.navigation.compose)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.work)
 }
