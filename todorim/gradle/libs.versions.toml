@@ -36,6 +36,10 @@ ksp = "1.9.20-1.0.14"
 realm = "1.16.0"
 #Work
 work = "2.7.1"
+#Logger
+logger = "2.2.0"
+#Gson
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -89,6 +93,10 @@ realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "
 realm-android = { group = "io.realm", name = "realm-gradle-plugin", version.ref = "realm" }
 #Work  >> Targeting S+ (version 31 and above) require PendingIntent Issues
 work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+#Logger
+logger = { group = "com.orhanobut", name = "logger", version.ref = "logger" }
+#Gson
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

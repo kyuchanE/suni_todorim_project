@@ -61,6 +61,9 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.data)
     implementation(projects.core.domain)
+    implementation(projects.navigator)
+    implementation(projects.feature.todo)
+    implementation(projects.feature.settings)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

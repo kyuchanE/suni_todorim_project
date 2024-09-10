@@ -1,21 +1,20 @@
-package com.suni.todorim
+package com.suni.todorim.activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.suni.navigator.TodoNavigator
 import com.suni.todorim.ui.HomeScreen
 import com.suni.todorim.ui.HomeScreenViewModel
 import com.suni.ui.theme.SuniTodorimTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * [ComponentActivity] 메인 화면
@@ -23,6 +22,10 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var todoNavigator: TodoNavigator
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -35,7 +38,15 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val viewModel = hiltViewModel<HomeScreenViewModel>()
-                    HomeScreen(viewModel = viewModel)
+                    HomeScreen(
+                        viewModel = viewModel,
+                        todoNavigatorAction = {
+                            todoNavigator.navigateFrom(
+                                activity = this,
+                                withFinish = false,
+                            )
+                        }
+                    )
                 }
             }
         }
