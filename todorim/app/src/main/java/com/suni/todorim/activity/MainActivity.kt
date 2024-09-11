@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.suni.navigator.KEY_GROUP_FLAG
+import com.suni.navigator.GroupNavigator
 import com.suni.navigator.TodoNavigator
 import com.suni.todorim.ui.HomeScreen
 import com.suni.todorim.ui.HomeScreenViewModel
@@ -23,8 +25,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    // TODO 메인에서 TodoActivity 접근 시나리오가 있는가?
     @Inject
     lateinit var todoNavigator: TodoNavigator
+    @Inject
+    lateinit var groupNavigator: GroupNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +49,13 @@ class MainActivity : ComponentActivity() {
                             todoNavigator.navigateFrom(
                                 activity = this,
                                 withFinish = false,
+                            )
+                        },
+                        groupNavigatorAction = { flag ->
+                            groupNavigator.navigateFrom(
+                                activity = this,
+                                withFinish = false,
+                                intentBuilder = { putExtra(KEY_GROUP_FLAG, flag) }
                             )
                         }
                     )

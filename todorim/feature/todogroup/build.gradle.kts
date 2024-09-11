@@ -1,27 +1,20 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.realm)
-//    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.suni.todorim"
+    namespace = "com.suni.todogroup"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.suni.todorim"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -46,25 +39,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
     hilt {
         enableAggregatingTask = false
     }
 }
 
 dependencies {
-
-    implementation(projects.core.ui)
     implementation(projects.core.data)
     implementation(projects.core.domain)
+    implementation(projects.core.ui)
     implementation(projects.navigator)
-    implementation(projects.feature.todo)
-    implementation(projects.feature.todogroup)
-    implementation(projects.feature.settings)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -86,8 +70,6 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    // Splash
-    implementation(libs.core.splashscreen)
     // Coil Image Loading
     implementation(libs.coil.compose)
     implementation(libs.coil.video)
@@ -97,16 +79,4 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.work)
-    // Retrofit2
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
-    implementation(libs.converter.moshi)
-    // Realm
-    implementation(libs.realm.base)
-    implementation(libs.realm.sync)
-//    implementation(libs.realm.android)
-    // Work Targeting S+ (version 31 and above) require PendingIntent Issues
-    implementation(libs.work)
 }

@@ -39,12 +39,14 @@ import com.suni.domain.findActivity
 import com.suni.domain.getDayOfWeek
 import com.suni.domain.getStrHomeDate
 import com.suni.domain.getTimeNow
+import com.suni.navigator.GroupScreenFlag
 import com.suni.ui.R
 
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    todoNavigatorAction: () -> Unit,
+    todoNavigatorAction: () -> Unit = {},
+    groupNavigatorAction: (groupFlag: String) -> Unit = {_ -> },
 ) {
 
     LaunchedEffect(Unit) {
@@ -67,7 +69,11 @@ fun HomeScreen(
             modifier = Modifier.padding(pv),
             color = testBgColor[viewModel.state.backgroundIndex]
         ) {
-            HomeBody(vm = viewModel, todoNavigatorAction = todoNavigatorAction)
+            HomeBody(
+                vm = viewModel,
+                todoNavigatorAction = todoNavigatorAction,
+                groupNavigatorAction = groupNavigatorAction,
+            )
         }
         
     }
@@ -77,7 +83,8 @@ fun HomeScreen(
 @Composable
 private fun HomeBody(
     vm: HomeScreenViewModel,
-    todoNavigatorAction: () -> Unit,
+    todoNavigatorAction: () -> Unit = {},
+    groupNavigatorAction: (groupFlag: String) -> Unit = {_ -> },
 ) {
 
     val pageState = rememberPagerState(
@@ -136,7 +143,7 @@ private fun HomeBody(
             GroupContainer(
                 item = group,
                 groupIndex = groupIndex,
-                todoNavigatorAction = todoNavigatorAction
+                groupNavigatorAction = groupNavigatorAction,
             )
         }
     }
@@ -146,7 +153,7 @@ private fun HomeBody(
 private fun GroupContainer(
     item: GroupEntity,
     groupIndex: Int,
-    todoNavigatorAction: () -> Unit,
+    groupNavigatorAction: (groupFlag: String) -> Unit = {_ -> },
 ) {
     val context = LocalContext.current
 
@@ -164,6 +171,7 @@ private fun GroupContainer(
                     indication = null
                 ) {
                     Toast.makeText(context.findActivity(), "Create Group", Toast.LENGTH_SHORT).show()
+                    groupNavigatorAction(GroupScreenFlag.CREATE.name)
                 }
             ){
                 Text(text = "페이지 생성하기!!!")
@@ -176,7 +184,7 @@ private fun GroupContainer(
                     indication = null
                 ) {
                     Toast.makeText(context.findActivity(), "Group Detail", Toast.LENGTH_SHORT).show()
-                    todoNavigatorAction()
+                    groupNavigatorAction(GroupScreenFlag.DETAIL.name)
                 }
             ){
                 // Group Title

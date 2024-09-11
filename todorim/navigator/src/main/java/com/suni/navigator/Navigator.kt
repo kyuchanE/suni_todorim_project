@@ -18,3 +18,12 @@ interface Navigator {
 interface MainNavigator: Navigator
 
 interface TodoNavigator: Navigator
+
+interface GroupNavigator: Navigator
+
+const val KEY_GROUP_FLAG = "GROUP_FLAG"
+enum class GroupScreenFlag {
+    CREATE,
+    MODIFY,
+    DETAIL,
+}

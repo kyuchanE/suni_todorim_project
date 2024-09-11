@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.suni.todo.ui.detail.TodoDetailScreen
+import com.suni.todo.ui.create.CreateTodoScreen
 import com.suni.ui.theme.SuniTodorimTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +21,7 @@ class TodoActivity: ComponentActivity() {
 
         setContent {
             SuniTodorimTheme {
-                TodoDetailScreen()
+                CreateTodoScreen()
             }
         }
     }
