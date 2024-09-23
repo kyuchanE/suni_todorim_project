@@ -79,4 +79,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.work)
+    // Realm
+    implementation(libs.realm.base)
+    implementation(libs.realm.sync)
 }

@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -83,6 +86,30 @@ inline fun <reified T: Activity> Activity.startActivityWithAnimation(
     withFinish: Boolean = true
 ) {
     startActivity(Intent(this, T::class.java).intentBuilder())
+    if (Build.VERSION.SDK_INT >= 34) {
+        overrideActivityTransition(
+            Activity.OVERRIDE_TRANSITION_OPEN,
+            android.R.anim.fade_in,
+            android.R.anim.fade_out,
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        overridePendingTransition(
+            android.R.anim.fade_in,
+            android.R.anim.fade_out,
+        )
+    }
+    if (withFinish) finish()
+}
+
+inline fun <reified T: Activity> Activity.resultLauncherWithAnimation(
+    intentBuilder: Intent.() -> Intent = { this },
+    activityResultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    withFinish: Boolean = true
+) {
+    activityResultLauncher.launch(
+        Intent(this, T::class.java).intentBuilder()
+    )
     if (Build.VERSION.SDK_INT >= 34) {
         overrideActivityTransition(
             Activity.OVERRIDE_TRANSITION_OPEN,

@@ -11,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.suni.navigator.KEY_GROUP_FLAG
 import com.suni.navigator.GroupNavigator
+import com.suni.navigator.KEY_GROUP_ID
+import com.suni.navigator.KEY_GROUP_MAX_ID
+import com.suni.navigator.KEY_GROUP_MAX_ORDER_ID
 import com.suni.navigator.TodoNavigator
 import com.suni.todorim.ui.HomeScreen
 import com.suni.todorim.ui.HomeScreenViewModel
@@ -51,11 +54,17 @@ class MainActivity : ComponentActivity() {
                                 withFinish = false,
                             )
                         },
-                        groupNavigatorAction = { flag ->
-                            groupNavigator.navigateFrom(
+                        groupNavigatorAction = { flag, groupId, maxGroupId, maxOrderId, launcher ->
+                            groupNavigator.containResultNavigateFrom(
                                 activity = this,
                                 withFinish = false,
-                                intentBuilder = { putExtra(KEY_GROUP_FLAG, flag) }
+                                activityResultLauncher = launcher,
+                                intentBuilder = {
+                                    putExtra(KEY_GROUP_FLAG, flag)
+                                    putExtra(KEY_GROUP_ID, groupId)
+                                    putExtra(KEY_GROUP_MAX_ID, maxGroupId)
+                                    putExtra(KEY_GROUP_MAX_ORDER_ID, maxOrderId)
+                                }
                             )
                         }
                     )

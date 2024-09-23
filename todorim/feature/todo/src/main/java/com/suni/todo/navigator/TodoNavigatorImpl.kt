@@ -2,6 +2,10 @@ package com.suni.todo.navigator
 
 import android.app.Activity
 import android.content.Intent
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import com.suni.domain.resultLauncherWithAnimation
 import com.suni.domain.startActivityWithAnimation
 import com.suni.navigator.Navigator
 import com.suni.navigator.TodoNavigator
@@ -19,6 +23,19 @@ class TodoNavigatorImpl @Inject constructor() : TodoNavigator{
         withFinish: Boolean
     ) {
         activity.startActivityWithAnimation<TodoActivity>(
+            intentBuilder = intentBuilder,
+            withFinish = withFinish,
+        )
+    }
+
+    override fun containResultNavigateFrom(
+        activity: Activity,
+        activityResultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+        intentBuilder: Intent.() -> Intent,
+        withFinish: Boolean
+    ) {
+        activity.resultLauncherWithAnimation<TodoActivity>(
+            activityResultLauncher = activityResultLauncher,
             intentBuilder = intentBuilder,
             withFinish = withFinish,
         )

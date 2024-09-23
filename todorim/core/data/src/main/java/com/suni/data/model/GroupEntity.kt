@@ -10,11 +10,11 @@ import io.realm.kotlin.types.annotations.PrimaryKey
  */
 class GroupEntity: RealmObject {
     @PrimaryKey
-    var groupId: Int = 0                // 그룹 번호
-    var order: Int = 0                  // 그룹 순서
-    var title: String = ""              // 그룹 이름
-    var startColorHex: String = ""      //
-    var endColorHex: String = ""        //
+    var groupId: Int = 0                            // 그룹 번호
+    var order: Int = 0                              // 그룹 순서
+    var title: String = ""                          // 그룹 이름
+    var startColorHex: String = ""                  //
+    var endColorHex: String = ""                    //
     var appColorIndex: Int = 0
 
 //    fun setGroupId(id: Int) {

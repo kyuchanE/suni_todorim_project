@@ -17,6 +17,7 @@ class GetGroupDataUseCase @Inject constructor(
     fun getGroupsAll(): RealmResults<GroupEntity> =
         realm.query<GroupEntity>().find()
 
-    fun getGroupById(id: Int): RealmResults<GroupEntity> =
-        realm.query<GroupEntity>("groupId = $0", id).find()
+    fun getGroupById(groupId: Int): RealmResults<GroupEntity> =
+        realm.query<GroupEntity>("groupId = $0", groupId).find()
+
 }

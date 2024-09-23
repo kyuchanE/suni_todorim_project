@@ -2,6 +2,9 @@ package com.suni.navigator
 
 import android.app.Activity
 import android.content.Intent
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 
 /**
  * [Interface] 네비게이션 인터페이스
@@ -11,7 +14,14 @@ interface Navigator {
     fun navigateFrom(
         activity: Activity,
         intentBuilder: Intent.() -> Intent = { this },
-        withFinish: Boolean = false,
+        withFinish: Boolean = true,
+    )
+
+    fun containResultNavigateFrom(
+        activity: Activity,
+        activityResultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+        intentBuilder: Intent.() -> Intent,
+        withFinish: Boolean = true,
     )
 }
 
@@ -22,6 +32,9 @@ interface TodoNavigator: Navigator
 interface GroupNavigator: Navigator
 
 const val KEY_GROUP_FLAG = "GROUP_FLAG"
+const val KEY_GROUP_ID = "GROUP_ID"
+const val KEY_GROUP_MAX_ID = "GROUP_MAX_ID"
+const val KEY_GROUP_MAX_ORDER_ID = "GROUP_MAX_ORDER_ID"
 enum class GroupScreenFlag {
     CREATE,
     MODIFY,

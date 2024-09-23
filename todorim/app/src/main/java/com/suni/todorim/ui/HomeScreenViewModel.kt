@@ -1,6 +1,5 @@
 package com.suni.todorim.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,7 +44,10 @@ class HomeScreenViewModel @Inject constructor(
      * 그룹 정보 저장
      * @param event AddGroupItem
      */
-    private fun addGroupItem(event: HomeScreenEvents.AddGroupItem) {
+    private fun addGroupItem(
+        event: HomeScreenEvents.AddGroupItem,
+        needFetch: Boolean = true,
+    ) {
         writeGroupDataUseCase(
             event.groupId,
             event.order,
@@ -55,13 +57,14 @@ class HomeScreenViewModel @Inject constructor(
             event.appColorIndex
         )
 
-        fetchGroupsItem()
+        if (needFetch)
+            fetchGroupsItem()
     }
 
     /**
      * 모든 그룹 정보 조회
      */
-    fun fetchGroupsItem() {
+    private fun fetchGroupsItem() {
         val groupList = mutableListOf<GroupEntity>()
         val realmResult = getGroupDataUseCase.getGroupsAll()
         var maxGroupId = 0
@@ -72,18 +75,24 @@ class HomeScreenViewModel @Inject constructor(
                 HomeScreenEvents.AddGroupItem(
                     groupId = 1,
                     order = 1,
-                    title = "First"
+                    title = "Default",
+                    appColorIndex = 0,
                 )
             )
         } else {
             realmResult.forEach { groupData ->
-                Log.d("@@@@@@", groupData.title)
                 groupList.add(groupData)
                 if (maxGroupId < groupData.groupId)
                     maxGroupId = groupData.groupId
                 if (maxOrder < groupData.order)
                     maxOrder = groupData.order
             }
+
+            groupList.sortBy { it.groupId }
+            // Default 페이지 생성 아이템 추가
+            groupList.add(
+                GroupEntity()
+            )
 
             state = state.copy(
                 groupLists = groupList,

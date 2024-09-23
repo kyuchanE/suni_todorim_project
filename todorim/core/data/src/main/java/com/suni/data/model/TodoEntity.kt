@@ -1,9 +1,7 @@
 package com.suni.data.model
 
 import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.Ignore
 import io.realm.kotlin.types.annotations.PrimaryKey
-import java.util.Date
 
 /**
  * [RealmObject] 할일 객체
