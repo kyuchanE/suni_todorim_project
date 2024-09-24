@@ -15,6 +15,7 @@ import com.suni.navigator.GroupScreenFlag
 import com.suni.navigator.KEY_GROUP_ID
 import com.suni.navigator.KEY_GROUP_MAX_ID
 import com.suni.navigator.KEY_GROUP_MAX_ORDER_ID
+import com.suni.navigator.KEY_TODO_MAX_ID
 import com.suni.navigator.TodoNavigator
 import com.suni.todogroup.ui.create.CreateGroupScreen
 import com.suni.todogroup.ui.create.CreateGroupScreenViewModel
@@ -66,13 +67,17 @@ class GroupActivity : ComponentActivity(){
                         GroupDetailScreen(
                             viewModel = groupDetailViewModel,
                             groupId = groupId,
-                            todoNavigatorAction = {
-                                todoNavigator.navigateFrom(
-                                    activity = this,
-                                    withFinish = false,
-                                )
-                            }
-                        )
+                        ) { launcher, todoMaxId ->
+                            todoNavigator.containResultNavigateFrom(
+                                activity = this,
+                                withFinish = false,
+                                activityResultLauncher = launcher,
+                                intentBuilder = {
+                                    putExtra(KEY_GROUP_ID, groupId)
+                                    putExtra(KEY_TODO_MAX_ID, todoMaxId)
+                                }
+                            )
+                        }
                     }
                     else -> {
                         Spacer(modifier = Modifier

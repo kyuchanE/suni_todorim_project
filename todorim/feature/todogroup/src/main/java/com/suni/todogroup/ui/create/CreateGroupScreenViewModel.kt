@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.suni.data.model.GroupEntity
 import com.suni.domain.usecase.WriteGroupDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -37,12 +38,14 @@ class CreateGroupScreenViewModel @Inject constructor(
      */
     private fun createGroup(event: CreateGroupScreenEvents.CreateGroup) {
         writeGroupDataUseCase(
-            event.groupId,
-            event.order,
-            event.title,
-            event.startColorHex,
-            event.endColorHex,
-            event.appColorIndex
+            GroupEntity().apply {
+                groupId = event.groupId
+                order = event.order
+                title = event.title
+                startColorHex = event.startColorHex
+                endColorHex = event.endColorHex
+                appColorIndex = event.appColorIndex
+            }
         )
     }
 

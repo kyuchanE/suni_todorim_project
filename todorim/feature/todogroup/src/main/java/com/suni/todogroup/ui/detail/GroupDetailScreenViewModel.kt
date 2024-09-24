@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.suni.data.model.GroupEntity
+import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.GetGroupDataUseCase
+import com.suni.domain.usecase.GetTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupDetailScreenViewModel @Inject constructor(
     private val getGroupDataUseCase: GetGroupDataUseCase,
+    private val getTodoDataUseCase: GetTodoDataUseCase,
 ): ViewModel() {
 
     var state by mutableStateOf(GroupDetailScreenState())
@@ -31,12 +33,36 @@ class GroupDetailScreenViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 특정 그룹 데이터 조회
+     * @param event
+     */
     private fun fetchGroupItem(event: GroupDetailScreenEvents.LoadGroupData) {
-        val result = getGroupDataUseCase.getGroupById(event.groupId)
-        if (result.isNotEmpty()) {
-            state = state.copy(
-                groupData = result.first()
-            )
+        viewModelScope.launch {
+            // fetch Group
+            val resultGroupItem = getGroupDataUseCase.getGroupById(event.groupId)
+            if (resultGroupItem.isNotEmpty()) {
+                state = state.copy(
+                    groupData = resultGroupItem.first()
+                )
+            }
+            // fetch Group TodoList
+            var todoMaxId = 0
+            val resultTodoItems = getTodoDataUseCase.getTodoByGroupId(event.groupId)
+            if (resultTodoItems.isNotEmpty()) {
+                val resultList = mutableListOf<TodoEntity>()
+                resultTodoItems.forEach {
+                    resultList.add(it)
+                    if (it.todoId > todoMaxId)
+                        todoMaxId = it.todoId
+                }
+                resultList.sortBy { it.todoId }
+                state = state.copy(
+                    todoDataList = resultList,
+                    todoMaxId = todoMaxId,
+                )
+            }
         }
+
     }
 }

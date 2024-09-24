@@ -49,12 +49,14 @@ class HomeScreenViewModel @Inject constructor(
         needFetch: Boolean = true,
     ) {
         writeGroupDataUseCase(
-            event.groupId,
-            event.order,
-            event.title,
-            event.startColorHex,
-            event.endColorHex,
-            event.appColorIndex
+            GroupEntity().apply {
+                groupId = event.groupId
+                order = event.order
+                title = event.title
+                startColorHex = event.startColorHex
+                endColorHex = event.endColorHex
+                appColorIndex = event.appColorIndex
+            }
         )
 
         if (needFetch)

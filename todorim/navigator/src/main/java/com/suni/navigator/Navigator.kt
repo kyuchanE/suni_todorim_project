@@ -35,6 +35,7 @@ const val KEY_GROUP_FLAG = "GROUP_FLAG"
 const val KEY_GROUP_ID = "GROUP_ID"
 const val KEY_GROUP_MAX_ID = "GROUP_MAX_ID"
 const val KEY_GROUP_MAX_ORDER_ID = "GROUP_MAX_ORDER_ID"
+const val KEY_TODO_MAX_ID = "TODO_MAX_ID"
 enum class GroupScreenFlag {
     CREATE,
     MODIFY,

@@ -8,9 +8,46 @@ import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import com.suni.ui.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+
+/**
+ * 그라데이션 start color
+ */
+fun Int.getGradientStartColor(): Int {
+    return when(this) {
+        1 -> R.color.gradient_start_1
+        2 -> R.color.gradient_start_2
+        3 -> R.color.gradient_start_3
+        4 -> R.color.gradient_start_4
+        5 -> R.color.gradient_start_5
+        6 -> R.color.gradient_start_6
+        7 -> R.color.gradient_start_7
+        8 -> R.color.gradient_start_8
+        9 -> R.color.gradient_start_9
+        else -> R.color.tdr_default
+    }
+}
+
+/**
+ * 그라데이션 end color
+ */
+fun Int.getGradientEndColor(): Int {
+    return when(this) {
+        1 -> R.color.gradient_end_1
+        2 -> R.color.gradient_end_2
+        3 -> R.color.gradient_end_3
+        4 -> R.color.gradient_end_4
+        5 -> R.color.gradient_end_5
+        6 -> R.color.gradient_end_6
+        7 -> R.color.gradient_end_7
+        8 -> R.color.gradient_end_8
+        9 -> R.color.gradient_end_9
+        else -> R.color.tdr_default
+    }
+}
 
 fun String.getTimeNow(): String {
     return try {

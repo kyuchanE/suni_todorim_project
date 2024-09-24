@@ -76,12 +76,14 @@ fun CreateGroupScreen(
                         currentFocus.clearFocus()
                     }
             ) {
+                // 최상단 타이틀
                 CreateGroupTitle(
                     context = context,
                     modifier = Modifier
                         .fillMaxWidth()
 
                 )
+                // 그룹 색상 선택
                 SelectGroupColor(
                     modifier = Modifier
                         .weight(1f)
@@ -97,6 +99,7 @@ fun CreateGroupScreen(
                         )
                     }
                 )
+                // 그룹 생성 버튼
                 BottomButton(
                     modifier = Modifier
                         .fillMaxWidth()
