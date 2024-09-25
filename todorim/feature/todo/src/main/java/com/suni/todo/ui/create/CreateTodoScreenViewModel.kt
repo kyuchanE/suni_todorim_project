@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.WriteTodoDataUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,6 +15,7 @@ import javax.inject.Inject
  * [ViewModel] 할 일 생성 뷰모델
  * 24.09.24 Create class - Q
  */
+@HiltViewModel
 class CreateTodoScreenViewModel @Inject constructor(
     private val writeTodoDataUseCase: WriteTodoDataUseCase,
 ): ViewModel() {
@@ -38,6 +40,10 @@ class CreateTodoScreenViewModel @Inject constructor(
                     title = event.title
                     isCompleted = event.isCompleted
                 }
+            )
+
+            state = state.copy(
+                isFinished = true
             )
         }
     }

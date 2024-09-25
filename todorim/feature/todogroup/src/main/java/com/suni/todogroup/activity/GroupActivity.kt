@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.suni.navigator.KEY_GROUP_FLAG
 import com.suni.navigator.GroupScreenFlag
+import com.suni.navigator.KEY_GROUP_COLOR_INDEX
 import com.suni.navigator.KEY_GROUP_ID
 import com.suni.navigator.KEY_GROUP_MAX_ID
 import com.suni.navigator.KEY_GROUP_MAX_ORDER_ID
@@ -67,7 +68,7 @@ class GroupActivity : ComponentActivity(){
                         GroupDetailScreen(
                             viewModel = groupDetailViewModel,
                             groupId = groupId,
-                        ) { launcher, todoMaxId ->
+                        ) { launcher, todoMaxId, groupColorIndex ->
                             todoNavigator.containResultNavigateFrom(
                                 activity = this,
                                 withFinish = false,
@@ -75,6 +76,7 @@ class GroupActivity : ComponentActivity(){
                                 intentBuilder = {
                                     putExtra(KEY_GROUP_ID, groupId)
                                     putExtra(KEY_TODO_MAX_ID, todoMaxId)
+                                    putExtra(KEY_GROUP_COLOR_INDEX, groupColorIndex)
                                 }
                             )
                         }

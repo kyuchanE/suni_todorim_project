@@ -28,8 +28,8 @@ fun GradientButton(
     text: String,
     textColor: Color = colorResource(id = R.color.tdr_default),
     modifier: Modifier,
-    onClick: () -> Unit = {},
     selectedColorIndex: Int = 0,
+    onClick: () -> Unit = {},
 ) {
     var startColor = R.color.tdr_default
     var endColor = R.color.tdr_default

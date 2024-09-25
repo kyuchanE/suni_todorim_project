@@ -153,14 +153,7 @@ private fun HomeBody(
         ) {
             Text(text = getStrHomeDate())
             IconButton(onClick = {
-                vm.onEvent(
-                    HomeScreenEvents.AddGroupItem(
-                        groupId = vm.state.maxGroupId + 1,
-                        order = vm.state.maxOrder + 1,
-                        title = "Number ${vm.state.maxGroupId + 1}!!!",
-                        appColorIndex = vm.state.maxGroupId + 1,
-                    )
-                )
+                // TODO 설정 페이지 이동
             }) {
                 Icon(imageVector = Icons.Filled.Settings, contentDescription = null)
             }

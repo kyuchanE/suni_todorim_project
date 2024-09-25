@@ -47,8 +47,9 @@ fun GroupDetailScreen(
     groupId: Int,
     todoNavigatorAction: (
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
-            todoMaxId: Int,
-    ) -> Unit = { _, _ -> },
+        todoMaxId: Int,
+        groupColorIndex: Int,
+    ) -> Unit = { _, _, _ -> },
 ) {
     val context = LocalContext.current
     val groupData: GroupEntity = viewModel.state.groupData
@@ -93,7 +94,7 @@ fun GroupDetailScreen(
                     isChangedInfo = isChangedInfo.value
                 )
                 // 할 일 목록
-                TodoDataList(modifier = Modifier.fillMaxWidth())
+                TodoDataList(modifier = Modifier.fillMaxWidth(), groupTodoList)
             }
             // 하단 할 일 생성 버튼
             GradientFloatingActionButton(
@@ -102,7 +103,11 @@ fun GroupDetailScreen(
                 endColor = groupData.appColorIndex.getGradientEndColor(),
                 icon = Icons.Filled.Add,
             ) {
-                todoNavigatorAction(createTodoLauncher, viewModel.state.todoMaxId)
+                todoNavigatorAction(
+                    createTodoLauncher,
+                    viewModel.state.todoMaxId,
+                    viewModel.state.groupData.appColorIndex,
+                )
             }
 
         }
@@ -150,37 +155,21 @@ private fun GroupDetailTitle(
 @Composable
 private fun TodoDataList(
     modifier: Modifier,
+    groupTodoList: MutableList<TodoEntity>
 ) {
-    val test = mutableListOf(
-        "테스틑테스트",
-        "아침운동",
-        "저녁운동",
-        "설거지",
-        "빨래 돌리기",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "ㅁ",
-        "ㄱ",
-        "ㅎ",
-        "ㅅ",
-        "ㄱ"
-    )
     LazyColumn(
         modifier = modifier,
     ) {
         itemsIndexed(
-            items = test,
-            key = { index, str ->
-                str
+            items = groupTodoList,
+            key = { index, todoData ->
+                todoData.todoId
             }
-        ) { index, str ->
+        ) { index, todoData ->
             TdrCheckBox(
                 modifier = Modifier.fillMaxWidth(),
                 todoId = index,
-                todoTitle = str,
+                todoTitle = todoData.title,
             ) { todoId ->
 
             }

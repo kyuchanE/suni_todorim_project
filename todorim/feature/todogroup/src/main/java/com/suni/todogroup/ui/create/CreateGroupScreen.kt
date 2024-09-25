@@ -100,17 +100,19 @@ fun CreateGroupScreen(
                     }
                 )
                 // 그룹 생성 버튼
-                BottomButton(
+                GradientButton(
+                    text = stringResource(id = R.string.str_add),
+                    textColor = Color.White,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .height(65.dp),
-                    selectedColorIndex = viewModel.state.colorIndex,
+                    selectedColorIndex = viewModel.state.colorIndex
                 ) {
                     viewModel.onEvent(
                         CreateGroupScreenEvents.CreateGroup(
-                            groupId = maxGroupId + 1,
-                            order = maxOrderId + 1,
+                            groupId = maxGroupId,
+                            order = maxOrderId,
                             title = strGroupTitle.value,
                             appColorIndex = viewModel.state.colorIndex,
                         )
@@ -150,7 +152,7 @@ private fun CreateGroupTitle(
 }
 
 /**
- * 그룹 색상 선택
+ * 그룹 색상 선택 및 타이틀
  * @param modifier
  */
 @Composable
@@ -177,25 +179,4 @@ private fun SelectGroupColor(
             selectColorEvent = selectedColorEvent
         )
     }
-}
-
-/**
- * 하단 버튼
- * @param vm
- * @param modifier
- * @param finishedCreateAction
- */
-@Composable
-private fun BottomButton(
-    modifier: Modifier,
-    selectedColorIndex: Int = 0,
-    finishedCreateAction: () -> Unit,
-) {
-    GradientButton(
-        text = stringResource(id = R.string.str_add),
-        textColor = Color.White,
-        modifier = modifier,
-        onClick = finishedCreateAction,
-        selectedColorIndex = selectedColorIndex
-    )
 }

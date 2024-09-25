@@ -47,7 +47,7 @@ class GroupDetailScreenViewModel @Inject constructor(
                 )
             }
             // fetch Group TodoList
-            var todoMaxId = 0
+            var todoMaxId = -1
             val resultTodoItems = getTodoDataUseCase.getTodoByGroupId(event.groupId)
             if (resultTodoItems.isNotEmpty()) {
                 val resultList = mutableListOf<TodoEntity>()
@@ -59,7 +59,7 @@ class GroupDetailScreenViewModel @Inject constructor(
                 resultList.sortBy { it.todoId }
                 state = state.copy(
                     todoDataList = resultList,
-                    todoMaxId = todoMaxId,
+                    todoMaxId = todoMaxId + 1,
                 )
             }
         }

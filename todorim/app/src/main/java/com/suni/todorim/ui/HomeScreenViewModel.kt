@@ -98,8 +98,8 @@ class HomeScreenViewModel @Inject constructor(
 
             state = state.copy(
                 groupLists = groupList,
-                maxGroupId = maxGroupId,
-                maxOrder = maxOrder,
+                maxGroupId = maxGroupId + 1,
+                maxOrder = maxOrder + 1,
             )
         }
     }

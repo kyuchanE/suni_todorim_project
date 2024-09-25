@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.suni.navigator.KEY_GROUP_COLOR_INDEX
 import com.suni.navigator.KEY_GROUP_ID
 import com.suni.navigator.KEY_TODO_MAX_ID
 import com.suni.todo.ui.create.CreateTodoScreen
@@ -27,6 +28,8 @@ class TodoActivity: ComponentActivity() {
             intent.getIntExtra(KEY_GROUP_ID, 0)
         val todoMaxId =
             intent.getIntExtra(KEY_TODO_MAX_ID, 0)
+        val groupColorIndex =
+            intent.getIntExtra(KEY_GROUP_COLOR_INDEX, 0)
 
         setContent {
             SuniTodorimTheme {
@@ -34,10 +37,10 @@ class TodoActivity: ComponentActivity() {
                 CreateTodoScreen(
                     viewModel = viewModel,
                     groupId = groupId,
+                    groupColorIndex = groupColorIndex,
                     todoMaxId = todoMaxId,
-                ) { isNeedRefresh ->
-                    if (isNeedRefresh)
-                        setResult(RESULT_OK)
+                ) {
+                    setResult(RESULT_OK)
                     finish()
                 }
             }
