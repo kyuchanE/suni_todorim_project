@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -216,7 +218,7 @@ private fun GroupContainer(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var refreshFlag = remember {
+    val refreshFlag = remember {
         mutableStateOf(false)
     }
 
@@ -261,7 +263,7 @@ private fun GroupContainer(
                 ) {
                     Toast.makeText(context.findActivity(), "Create Group", Toast.LENGTH_SHORT)
                         .show()
-                    
+
                     groupNavigatorAction(
                         GroupScreenFlag.CREATE.name,
                         groupIndex,
@@ -276,23 +278,41 @@ private fun GroupContainer(
         } else {
             // 그룹 페이지
             Column(
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    Toast.makeText(context.findActivity(), "Group Detail", Toast.LENGTH_SHORT)
-                        .show()
-                    groupNavigatorAction(
-                        GroupScreenFlag.DETAIL.name,
-                        groupIndex,
-                        maxGroupId,
-                        maxOrderId,
-                        detailGroupLauncher,
-                    )
-                }
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        groupNavigatorAction(
+                            GroupScreenFlag.DETAIL.name,
+                            groupIndex,
+                            maxGroupId,
+                            maxOrderId,
+                            detailGroupLauncher,
+                        )
+                    }
             ) {
                 // Group Title
                 Text(text = item.title)
+                // 할 일 목록
+                LazyColumn(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    userScrollEnabled = false,
+                ) {
+                    val todoItem = vm.state.todoLists
+                        .filter { it.groupId == item.groupId }
+                        .filter { !it.isCompleted }
+                        .toMutableList()
+                    todoItem.sortBy { it.todoId }
+                    itemsIndexed(
+                        items = todoItem,
+                        key = { index, todoEntity ->
+                            todoEntity.todoId
+                        },
+                    ) { _, todoEntity ->
+
+                    }
+                }
             }
         }
 

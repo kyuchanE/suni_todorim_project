@@ -33,14 +33,7 @@ class CreateTodoScreenViewModel @Inject constructor(
 
     private fun createTodo(event: CreateTodoScreenEvents.CreateTodo) {
         viewModelScope.launch {
-            writeTodoDataUseCase(
-                TodoEntity().apply {
-                    todoId = event.todoId
-                    groupId = event.groupId
-                    title = event.title
-                    isCompleted = event.isCompleted
-                }
-            )
+            writeTodoDataUseCase(event.todoEntity)
 
             state = state.copy(
                 isFinished = true

@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.suni.data.model.GroupEntity
+import com.suni.data.model.TodoEntity
 import com.suni.domain.findActivity
 import com.suni.todo.R
 import com.suni.ui.component.GradientButton
@@ -98,9 +99,11 @@ fun CreateTodoScreen(
                 ) {
                     viewModel.onEvent(
                         CreateTodoScreenEvents.CreateTodo(
-                            todoId = todoMaxId,
-                            groupId = groupId,
-                            title = strTodoTitle.value
+                            todoEntity = TodoEntity().apply {
+                                this.todoId = todoMaxId
+                                this.groupId = groupId
+                                this.title = strTodoTitle.value
+                            },
                         )
                     )
                 }

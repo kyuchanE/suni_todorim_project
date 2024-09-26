@@ -4,10 +4,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.suni.data.model.GroupEntity
+import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.GetGroupDataUseCase
+import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.WriteGroupDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -18,6 +23,7 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val getGroupDataUseCase: GetGroupDataUseCase,
     private val writeGroupDataUseCase: WriteGroupDataUseCase,
+    private val getTodoDataUseCase: GetTodoDataUseCase,
 ): ViewModel() {
 
     var state by mutableStateOf(HomeScreenState())
@@ -32,7 +38,7 @@ class HomeScreenViewModel @Inject constructor(
 
             }
             is HomeScreenEvents.LoadLocalData -> {
-                fetchGroupsItem()
+                fetchAll()
             }
             is HomeScreenEvents.ChangeBackground -> {
                 changeBgColor(event)
@@ -60,13 +66,42 @@ class HomeScreenViewModel @Inject constructor(
         )
 
         if (needFetch)
-            fetchGroupsItem()
+            fetchAll()
     }
 
     /**
-     * 모든 그룹 정보 조회
+     * 모든 그룹 정보 조회 + 모든 할 일 정보 조회
      */
-    private fun fetchGroupsItem() {
+    private fun fetchAll() {
+        viewModelScope.launch {
+            fetchGroupData()
+            fetchTodoData()
+        }
+
+    }
+
+    /**
+     * 모든 할 일 정보 조회
+     */
+    private fun fetchTodoData() : Job = viewModelScope.launch {
+        val todoList = mutableListOf<TodoEntity>()
+        val realmResult = getTodoDataUseCase.getTodoAll()
+
+        if (realmResult.isNotEmpty()) {
+            realmResult.forEach { todoEntity ->
+                todoList.add(todoEntity)
+            }
+
+            state = state.copy(
+                todoLists = todoList
+            )
+        }
+    }
+
+    /**
+     * 모든 그룹 정보 조회 JOB
+     */
+    private fun fetchGroupData() : Job = viewModelScope.launch {
         val groupList = mutableListOf<GroupEntity>()
         val realmResult = getGroupDataUseCase.getGroupsAll()
         var maxGroupId = 0
@@ -82,12 +117,12 @@ class HomeScreenViewModel @Inject constructor(
                 )
             )
         } else {
-            realmResult.forEach { groupData ->
-                groupList.add(groupData)
-                if (maxGroupId < groupData.groupId)
-                    maxGroupId = groupData.groupId
-                if (maxOrder < groupData.order)
-                    maxOrder = groupData.order
+            realmResult.forEach { groupEntity ->
+                groupList.add(groupEntity)
+                if (maxGroupId < groupEntity.groupId)
+                    maxGroupId = groupEntity.groupId
+                if (maxOrder < groupEntity.order)
+                    maxOrder = groupEntity.order
             }
 
             groupList.sortBy { it.groupId }

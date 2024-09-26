@@ -6,8 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suni.data.model.TodoEntity
+import com.suni.domain.usecase.DeleteTodoDataUseCase
 import com.suni.domain.usecase.GetGroupDataUseCase
 import com.suni.domain.usecase.GetTodoDataUseCase
+import com.suni.domain.usecase.UpdateTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +22,8 @@ import javax.inject.Inject
 class GroupDetailScreenViewModel @Inject constructor(
     private val getGroupDataUseCase: GetGroupDataUseCase,
     private val getTodoDataUseCase: GetTodoDataUseCase,
+    private val updateTodoDataUseCase: UpdateTodoDataUseCase,
+    private val deleteTodoDataUseCase: DeleteTodoDataUseCase,
 ): ViewModel() {
 
     var state by mutableStateOf(GroupDetailScreenState())
@@ -30,6 +34,35 @@ class GroupDetailScreenViewModel @Inject constructor(
             is GroupDetailScreenEvents.LoadGroupData -> {
                 fetchGroupItem(event)
             }
+            is GroupDetailScreenEvents.UpdateTodoData -> {
+                updateTodoCompleted(event)
+            }
+            is GroupDetailScreenEvents.DeleteTodoData -> {
+                deleteTodoEntity(event)
+            }
+        }
+    }
+
+    /**
+     * 할 일 삭제
+     * @param event
+     */
+    private fun deleteTodoEntity(
+        event: GroupDetailScreenEvents.DeleteTodoData,
+    ) {
+        viewModelScope.launch {
+            deleteTodoDataUseCase(event.todoId)
+            event.finishedEvent()
+        }
+    }
+
+    /**
+     * 할 일 완료 수정
+     * @param event
+     */
+    private fun updateTodoCompleted(event: GroupDetailScreenEvents.UpdateTodoData) {
+        viewModelScope.launch {
+            updateTodoDataUseCase(event.todoEntity)
         }
     }
 

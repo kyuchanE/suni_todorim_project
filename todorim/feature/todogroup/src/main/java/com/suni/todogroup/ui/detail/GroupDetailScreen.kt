@@ -7,37 +7,50 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
 import com.suni.domain.findActivity
 import com.suni.domain.getGradientEndColor
 import com.suni.domain.getGradientStartColor
+import com.suni.ui.R
 import com.suni.ui.component.GradientFloatingActionButton
 import com.suni.ui.component.TdrCheckBox
 
@@ -94,7 +107,11 @@ fun GroupDetailScreen(
                     isChangedInfo = isChangedInfo.value
                 )
                 // 할 일 목록
-                TodoDataList(modifier = Modifier.fillMaxWidth(), groupTodoList)
+                TodoDataList(
+                    modifier = Modifier.fillMaxWidth(),
+                    viewModel = viewModel,
+                    groupTodoList = groupTodoList
+                )
             }
             // 하단 할 일 생성 버튼
             GradientFloatingActionButton(
@@ -155,6 +172,7 @@ private fun GroupDetailTitle(
 @Composable
 private fun TodoDataList(
     modifier: Modifier,
+    viewModel: GroupDetailScreenViewModel,
     groupTodoList: MutableList<TodoEntity>
 ) {
     LazyColumn(
@@ -162,17 +180,135 @@ private fun TodoDataList(
     ) {
         itemsIndexed(
             items = groupTodoList,
-            key = { index, todoData ->
+            key = { _, todoData ->
                 todoData.todoId
             }
-        ) { index, todoData ->
+        ) { _, todoData ->
+            // 할 일 컨텐츠
+            TodoItemComponent(
+                modifier = Modifier.fillMaxSize(),
+                todoData = todoData,
+                swipeToDelete = { data ->
+                    viewModel.onEvent(
+                        GroupDetailScreenEvents.DeleteTodoData(data.todoId) {
+                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId))
+                        }
+                    )
+                },
+                swipeToEnter = { data ->
+
+                },
+                onChangedComplete = { data ->
+                    viewModel.onEvent(GroupDetailScreenEvents.UpdateTodoData(data))
+                }
+            )
+        }
+
+    }
+}
+
+/**
+ * 할 일 (스와이프 좌 우)
+ */
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun TodoItemComponent(
+    modifier: Modifier,
+    todoData: TodoEntity,
+    swipeToDelete: (data: TodoEntity) -> Unit = { _ -> },
+    swipeToEnter: (data: TodoEntity) -> Unit = { _ -> },
+    onChangedComplete: (data: TodoEntity) -> Unit = { _ -> },
+) {
+    val currentItem by rememberUpdatedState(newValue = todoData)
+    val dismissState = rememberSwipeToDismissBoxState(
+        initialValue = SwipeToDismissBoxValue.Settled,
+        confirmValueChange = { value ->
+            when (value) {
+                SwipeToDismissBoxValue.Settled -> {
+                    false
+                }
+
+                SwipeToDismissBoxValue.StartToEnd -> { // -> 방향 스와이프
+                    swipeToEnter(currentItem)
+                    false
+                }
+
+                SwipeToDismissBoxValue.EndToStart -> { // <- 방향 스와이프
+                    swipeToDelete(currentItem)
+                    false
+                }
+            }
+        },
+        positionalThreshold = { it * 0.2f }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        modifier = modifier,
+        backgroundContent = {
+            // 스와이프 할 때 보여지는 컨텐츠
+            val direction = dismissState.dismissDirection
+            val color by animateColorAsState(
+                targetValue = when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.Settled -> Color.White.copy(alpha = 0.5f)
+                    SwipeToDismissBoxValue.EndToStart -> Color.Red.copy(alpha = 0.4f)
+                    SwipeToDismissBoxValue.StartToEnd -> Color.Green.copy(alpha = 0.5f)
+                },
+                label = "ColorAnimation",
+            )
+            val icon = when (dismissState.targetValue) {
+                SwipeToDismissBoxValue.Settled -> painterResource(id = R.drawable.baseline_circle_24)
+                SwipeToDismissBoxValue.EndToStart -> painterResource(id = R.drawable.ic_remove_white)
+                SwipeToDismissBoxValue.StartToEnd -> painterResource(id = R.drawable.ic_modify_white)
+            }
+            val scale by animateFloatAsState(
+                targetValue = when (dismissState.targetValue == SwipeToDismissBoxValue.Settled) {
+                    true -> 0.3f
+                    else -> 1.0f
+                },
+                label = "FloatAnimation",
+            )
+            val alignment = when (direction) {
+                SwipeToDismissBoxValue.Settled -> Alignment.CenterEnd
+                SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
+                SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color)
+                    .padding(horizontal = 30.dp),
+                contentAlignment = alignment
+            ) {
+                val iconTintColor =
+                    if(dismissState.targetValue == SwipeToDismissBoxValue.Settled) Color.LightGray
+                    else Color.White
+                Icon(
+                    modifier = Modifier
+                        .scale(scale)
+                        .size(25.dp),
+                    painter = icon,
+                    tint = iconTintColor,
+                    contentDescription = null
+                )
+            }
+        },
+        content = {
+            // 스와이프 될 컨텐츠
             TdrCheckBox(
                 modifier = Modifier.fillMaxWidth(),
-                todoId = index,
-                todoTitle = todoData.title,
-            ) { todoId ->
-
+                todoTitle = currentItem.title,
+                isSelected = currentItem.isCompleted,
+            ) { isSelected ->
+                val resultItem = TodoEntity().apply {
+                    todoId = currentItem.todoId
+                    groupId = currentItem.groupId
+                    title = currentItem.title
+                    order = currentItem.order
+                    isCompleted = isSelected
+                }
+                onChangedComplete(resultItem)
             }
         }
-    }
+    )
 }
