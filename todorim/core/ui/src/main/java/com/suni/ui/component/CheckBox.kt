@@ -1,6 +1,5 @@
 package com.suni.ui.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -25,11 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.suni.ui.R
 
 /**
- * 체크박스
+ * 체크박스 (최상위 Row clickable)
  * @param modifier
- * @param todoId
  * @param todoTitle
- * @param isSelected
+ * @param isSelected 체크박스의 선택 여부
  * @param onCheckedAction
  */
 @Composable
@@ -40,6 +38,7 @@ fun TdrCheckBox(
     onCheckedAction: (isSelected: Boolean) -> Unit = { _ -> },
 ) {
     val checkBoxState = remember { mutableStateOf(isSelected) }
+
     Card(
         modifier = modifier,
         colors = CardColors(
@@ -60,8 +59,16 @@ fun TdrCheckBox(
                     onCheckedAction(checkBoxState.value)
                 }
         ) {
-            if (checkBoxState.value) CheckBoxSelected()
-            else CheckBoxUnSelected()
+            val boxModifier = Modifier.size(24.dp)
+            if (checkBoxState.value) {
+                CheckBoxSelected(
+                    modifier = boxModifier
+                )
+            } else {
+                CheckBoxUnSelected(
+                    modifier = boxModifier
+                )
+            }
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = todoTitle,
@@ -71,12 +78,72 @@ fun TdrCheckBox(
             )
         }
     }
+}
 
+/**
+ * 체크박스 (Only 체크박스 clickable)
+ * @param modifier
+ * @param todoTitle
+ * @param isSelected 체크박스의 선택 여부
+ * @param onCheckedAction
+ */
+@Composable
+fun TdrOnlyCheckBox(
+    modifier: Modifier,
+    todoTitle: String,
+    isSelected: Boolean = false,
+    onCheckedAction: (isSelected: Boolean) -> Unit = { _ -> },
+) {
+    val checkBoxState = remember { mutableStateOf(isSelected) }
+
+    Card(
+        modifier = modifier,
+        colors = CardColors(
+            containerColor = Color.White,
+            contentColor = colorResource(id = R.color.tdr_default),
+            disabledContentColor = Color.Gray,
+            disabledContainerColor = Color.DarkGray,
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            val boxModifier = Modifier
+                .size(24.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    checkBoxState.value = !checkBoxState.value
+                    onCheckedAction(checkBoxState.value)
+                }
+
+            if (checkBoxState.value) {
+                CheckBoxSelected(
+                    modifier = boxModifier
+                )
+            } else {
+                CheckBoxUnSelected(
+                    modifier = boxModifier
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = todoTitle,
+                textDecoration =
+                if (checkBoxState.value) TextDecoration.LineThrough
+                else TextDecoration.None,
+            )
+        }
+    }
 }
 
 @Composable
-private fun CheckBoxSelected() {
-    Box(modifier = Modifier.size(24.dp)) {
+private fun CheckBoxSelected(
+    modifier: Modifier,
+) {
+    Box(modifier = modifier) {
         Icon(
             painter = painterResource(id = R.drawable.ic_check_gray),
             tint = Color.LightGray,
@@ -86,8 +153,10 @@ private fun CheckBoxSelected() {
 }
 
 @Composable
-private fun CheckBoxUnSelected() {
-    Box(modifier = Modifier.size(24.dp)) {
+private fun CheckBoxUnSelected(
+    modifier: Modifier,
+) {
+    Box(modifier = modifier) {
         Icon(
             painter = painterResource(id = R.drawable.ic_uncheck_default),
             contentDescription = "UnChecked",

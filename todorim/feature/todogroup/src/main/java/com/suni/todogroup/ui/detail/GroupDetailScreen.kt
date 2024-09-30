@@ -3,6 +3,7 @@ package com.suni.todogroup.ui.detail
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -37,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +47,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
@@ -52,34 +58,49 @@ import com.suni.domain.getGradientEndColor
 import com.suni.domain.getGradientStartColor
 import com.suni.ui.R
 import com.suni.ui.component.GradientFloatingActionButton
+import com.suni.ui.component.LinearGradientProgressIndicator
 import com.suni.ui.component.TdrCheckBox
+import kotlinx.coroutines.launch
 
 @Composable
 fun GroupDetailScreen(
     viewModel: GroupDetailScreenViewModel,
     groupId: Int,
+    isNeedRefreshHome: Boolean = false,
     todoNavigatorAction: (
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
         todoMaxId: Int,
         groupColorIndex: Int,
     ) -> Unit = { _, _, _ -> },
+    moveGroupModifyScreenAction: () -> Unit = {},
+    refreshHomeScreenAction: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val groupData: GroupEntity = viewModel.state.groupData
     val groupTodoList: MutableList<TodoEntity> = viewModel.state.todoDataList
-    val isChangedInfo = remember {  // 그룹 정보가 변경될 경우
-        mutableStateOf(false)
-    }
+    val isChangedInfo = viewModel.state.isNeedRefreshHome
 
     LaunchedEffect(Unit) {
+        if (isNeedRefreshHome)
+            viewModel.setNeedRefreshState(true)
         viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId))
     }
 
     val createTodoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        // 할 일 생성 후 
         if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId))
+            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId, true))
+        }
+    }
+
+    // 시스템 백키
+    BackHandler {
+        if (isChangedInfo) {
+            refreshHomeScreenAction()
+        } else {
+            context.findActivity().finish()
         }
     }
 
@@ -104,7 +125,16 @@ fun GroupDetailScreen(
                         .padding(horizontal = 15.dp)
                         .fillMaxWidth(),
                     groupData = groupData,
-                    isChangedInfo = isChangedInfo.value
+                    isChangedInfo = isChangedInfo,
+                    refreshHomeScreenAction = refreshHomeScreenAction,
+                    moveGroupModifyScreenAction = moveGroupModifyScreenAction,
+                )
+                // 할 일 진행률
+                LinearGradientProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = Color.LightGray,
+                    colorIndex = viewModel.state.groupData.appColorIndex,
+                    percent = viewModel.getTodoCompletedPercent()
                 )
                 // 할 일 목록
                 TodoDataList(
@@ -144,16 +174,36 @@ private fun GroupDetailTitle(
     modifier: Modifier,
     groupData: GroupEntity,
     isChangedInfo: Boolean,
+    refreshHomeScreenAction: () -> Unit = { },
+    moveGroupModifyScreenAction: () -> Unit = { },
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = groupData.title)
-
+        // 할 일 Title
+        Text(
+            modifier = Modifier.weight(1f),
+            text = groupData.title,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+        // 할 일 수정
+        IconButton(
+            modifier = Modifier.size(45.dp),
+            onClick = moveGroupModifyScreenAction,
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_modify_dark),
+                contentDescription = "Modify Group",
+            )
+        }
+        // 닫기
         IconButton(onClick = {
             if (isChangedInfo) {
                 // 그룹 정보 변경 >> 메인 데이터 갱신 필요
+                refreshHomeScreenAction()
             } else {
                 context.findActivity().finish()
             }
@@ -199,7 +249,11 @@ private fun TodoDataList(
 
                 },
                 onChangedComplete = { data ->
-                    viewModel.onEvent(GroupDetailScreenEvents.UpdateTodoData(data))
+                    viewModel.onEvent(
+                        GroupDetailScreenEvents.UpdateTodoData(data) {
+                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId))
+                        }
+                    )
                 }
             )
         }
@@ -281,7 +335,7 @@ fun TodoItemComponent(
                 contentAlignment = alignment
             ) {
                 val iconTintColor =
-                    if(dismissState.targetValue == SwipeToDismissBoxValue.Settled) Color.LightGray
+                    if (dismissState.targetValue == SwipeToDismissBoxValue.Settled) Color.LightGray
                     else Color.White
                 Icon(
                     modifier = Modifier

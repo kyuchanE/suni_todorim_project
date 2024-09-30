@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,6 +24,8 @@ import com.suni.todogroup.ui.create.CreateGroupScreen
 import com.suni.todogroup.ui.create.CreateGroupScreenViewModel
 import com.suni.todogroup.ui.detail.GroupDetailScreen
 import com.suni.todogroup.ui.detail.GroupDetailScreenViewModel
+import com.suni.todogroup.ui.modify.ModifyGroupScreen
+import com.suni.todogroup.ui.modify.ModifyGroupScreenViewModel
 import com.suni.ui.theme.SuniTodorimTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -51,7 +55,15 @@ class GroupActivity : ComponentActivity(){
 
         setContent {
             SuniTodorimTheme {
-                when(groupScreenFlag) {
+
+                val rememberGroupFlag = remember {
+                    mutableStateOf(groupScreenFlag)
+                }
+                val rememberNeedRefresh = remember {
+                    mutableStateOf(false)
+                }
+
+                when(rememberGroupFlag.value) {
                     GroupScreenFlag.CREATE.name -> {
                         val createGroupViewModel = hiltViewModel<CreateGroupScreenViewModel>()
                         CreateGroupScreen(
@@ -68,18 +80,42 @@ class GroupActivity : ComponentActivity(){
                         GroupDetailScreen(
                             viewModel = groupDetailViewModel,
                             groupId = groupId,
-                        ) { launcher, todoMaxId, groupColorIndex ->
-                            todoNavigator.containResultNavigateFrom(
-                                activity = this,
-                                withFinish = false,
-                                activityResultLauncher = launcher,
-                                intentBuilder = {
-                                    putExtra(KEY_GROUP_ID, groupId)
-                                    putExtra(KEY_TODO_MAX_ID, todoMaxId)
-                                    putExtra(KEY_GROUP_COLOR_INDEX, groupColorIndex)
-                                }
-                            )
-                        }
+                            isNeedRefreshHome = rememberNeedRefresh.value,
+                            todoNavigatorAction = { launcher, todoMaxId, groupColorIndex ->
+                                todoNavigator.containResultNavigateFrom(
+                                    activity = this,
+                                    withFinish = false,
+                                    activityResultLauncher = launcher,
+                                    intentBuilder = {
+                                        putExtra(KEY_GROUP_ID, groupId)
+                                        putExtra(KEY_TODO_MAX_ID, todoMaxId)
+                                        putExtra(KEY_GROUP_COLOR_INDEX, groupColorIndex)
+                                    }
+                                )
+                            },
+                            refreshHomeScreenAction = {
+                                setResult(RESULT_OK)
+                                finish()
+                            },
+                            moveGroupModifyScreenAction = {
+                                rememberGroupFlag.value = GroupScreenFlag.MODIFY.name
+                            },
+                        )
+                    }
+                    GroupScreenFlag.MODIFY.name -> {
+                        val groupModifyViewModel = hiltViewModel<ModifyGroupScreenViewModel>()
+                        ModifyGroupScreen(
+                            viewModel = groupModifyViewModel,
+                            groupId =groupId,
+                            finishedModifyAction = {
+                                rememberGroupFlag.value = GroupScreenFlag.DETAIL.name
+                                rememberNeedRefresh.value = true
+                            },
+                            finishedDeleteAction = {
+                                setResult(RESULT_OK)
+                                finish()
+                            }
+                        )
                     }
                     else -> {
                         Spacer(modifier = Modifier

@@ -28,9 +28,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // TODO 메인에서 TodoActivity 접근 시나리오가 있는가?
-    @Inject
-    lateinit var todoNavigator: TodoNavigator
     @Inject
     lateinit var groupNavigator: GroupNavigator
 
@@ -48,12 +45,6 @@ class MainActivity : ComponentActivity() {
                     val viewModel = hiltViewModel<HomeScreenViewModel>()
                     HomeScreen(
                         viewModel = viewModel,
-                        todoNavigatorAction = {
-                            todoNavigator.navigateFrom(
-                                activity = this,
-                                withFinish = false,
-                            )
-                        },
                         groupNavigatorAction = { flag, groupId, maxGroupId, maxOrderId, launcher ->
                             groupNavigator.containResultNavigateFrom(
                                 activity = this,

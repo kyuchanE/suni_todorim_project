@@ -7,4 +7,5 @@ data class GroupDetailScreenState(
     val groupData : GroupEntity = GroupEntity(),
     val todoDataList : MutableList<TodoEntity> = mutableListOf(),
     val todoMaxId: Int = 0,
+    val isNeedRefreshHome: Boolean = false,
 )

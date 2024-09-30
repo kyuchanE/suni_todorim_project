@@ -6,13 +6,25 @@ import androidx.compose.ui.res.colorResource
 import com.suni.ui.R
 
 @Composable
-fun bgGradient(bgIndex:Int) : Brush {
-    return Brush.verticalGradient(
-        listOf(
-            colorResource(id = startColor(bgIndex)),
-            colorResource(id = endColor(bgIndex)),
+fun bgGradient(
+    bgIndex:Int,
+    isVertical: Boolean = true,
+) : Brush {
+    return if (isVertical) {
+        Brush.verticalGradient(
+            listOf(
+                colorResource(id = startColor(bgIndex)),
+                colorResource(id = endColor(bgIndex)),
+            )
         )
-    )
+    } else {
+        Brush.horizontalGradient(
+            listOf(
+                colorResource(id = startColor(bgIndex)),
+                colorResource(id = endColor(bgIndex)),
+            )
+        )
+    }
 }
 
 private fun startColor(bgIndex: Int): Int {

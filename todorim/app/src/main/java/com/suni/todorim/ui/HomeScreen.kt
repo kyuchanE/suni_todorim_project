@@ -47,10 +47,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.suni.data.model.GroupEntity
+import com.suni.data.model.TodoEntity
 import com.suni.domain.findActivity
 import com.suni.domain.getDayOfWeek
 import com.suni.domain.getStrHomeDate
 import com.suni.navigator.GroupScreenFlag
+import com.suni.ui.component.LinearGradientProgressIndicator
+import com.suni.ui.component.TdrOnlyCheckBox
 import com.suni.ui.component.bgGradient
 import kotlinx.coroutines.launch
 
@@ -63,7 +66,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    todoNavigatorAction: () -> Unit = {},
     groupNavigatorAction: (
         groupFlag: String,
         groupId: Int,
@@ -88,7 +90,6 @@ fun HomeScreen(
         ) {
             HomeBody(
                 vm = viewModel,
-                todoNavigatorAction = todoNavigatorAction,
                 groupNavigatorAction = groupNavigatorAction
             )
         }
@@ -105,7 +106,6 @@ fun HomeScreen(
 @Composable
 private fun HomeBody(
     vm: HomeScreenViewModel,
-    todoNavigatorAction: () -> Unit = {},
     groupNavigatorAction: (
         groupFlag: String,
         groupId: Int,
@@ -294,9 +294,18 @@ private fun GroupContainer(
             ) {
                 // Group Title
                 Text(text = item.title)
+                // 할 일 진행률
+                LinearGradientProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = Color.LightGray,
+                    colorIndex = item.appColorIndex,
+                    percent = vm.getTodoCompletedPercent(item.groupId)
+                )
                 // 할 일 목록
                 LazyColumn(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     userScrollEnabled = false,
                 ) {
                     val todoItem = vm.state.todoLists
@@ -310,7 +319,20 @@ private fun GroupContainer(
                             todoEntity.todoId
                         },
                     ) { _, todoEntity ->
-
+                        TdrOnlyCheckBox(
+                            modifier = Modifier.fillMaxWidth(),
+                            todoTitle = todoEntity.title,
+                            isSelected = todoEntity.isCompleted,
+                        ) { isSelected ->
+                            val resultItem = TodoEntity().apply {
+                                this.todoId = todoEntity.todoId
+                                this.groupId = todoEntity.groupId
+                                this.isCompleted = isSelected
+                                this.title = todoEntity.title
+                                this.order = todoEntity.order
+                            }
+                            vm.onEvent(HomeScreenEvents.UpdateTodoData(resultItem))
+                        }
                     }
                 }
             }

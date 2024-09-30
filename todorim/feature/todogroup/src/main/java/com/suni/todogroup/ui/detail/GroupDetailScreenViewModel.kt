@@ -24,19 +24,21 @@ class GroupDetailScreenViewModel @Inject constructor(
     private val getTodoDataUseCase: GetTodoDataUseCase,
     private val updateTodoDataUseCase: UpdateTodoDataUseCase,
     private val deleteTodoDataUseCase: DeleteTodoDataUseCase,
-): ViewModel() {
+) : ViewModel() {
 
     var state by mutableStateOf(GroupDetailScreenState())
         private set
 
     fun onEvent(event: GroupDetailScreenEvents) {
-        when(event) {
+        when (event) {
             is GroupDetailScreenEvents.LoadGroupData -> {
                 fetchGroupItem(event)
             }
+
             is GroupDetailScreenEvents.UpdateTodoData -> {
                 updateTodoCompleted(event)
             }
+
             is GroupDetailScreenEvents.DeleteTodoData -> {
                 deleteTodoEntity(event)
             }
@@ -52,6 +54,9 @@ class GroupDetailScreenViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             deleteTodoDataUseCase(event.todoId)
+            state = state.copy(
+                isNeedRefreshHome = true
+            )
             event.finishedEvent()
         }
     }
@@ -63,6 +68,10 @@ class GroupDetailScreenViewModel @Inject constructor(
     private fun updateTodoCompleted(event: GroupDetailScreenEvents.UpdateTodoData) {
         viewModelScope.launch {
             updateTodoDataUseCase(event.todoEntity)
+            state = state.copy(
+                isNeedRefreshHome = true
+            )
+            event.finishedEvent()
         }
     }
 
@@ -93,9 +102,43 @@ class GroupDetailScreenViewModel @Inject constructor(
                 state = state.copy(
                     todoDataList = resultList,
                     todoMaxId = todoMaxId + 1,
+                    isNeedRefreshHome =
+                    if (event.isNeedRefresh) {
+                        true
+                    } else {
+                        state.isNeedRefreshHome
+                    }
                 )
             }
         }
 
+    }
+
+    /**
+     * 할 일 진행률
+     */
+    fun getTodoCompletedPercent(): Float {
+        var total = 0
+        var completed = 0
+        state.todoDataList.forEach {
+            total++
+            if (it.isCompleted)
+                completed++
+        }
+
+        return if (total == 0 || completed == 0) {
+            0f
+        } else {
+            completed.toFloat() / total.toFloat() * 100
+        }
+    }
+
+    /**
+     *
+     */
+    fun setNeedRefreshState(isNeedFresh: Boolean) {
+        state = state.copy(
+            isNeedRefreshHome = isNeedFresh
+        )
     }
 }

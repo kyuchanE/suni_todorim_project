@@ -14,4 +14,5 @@ sealed class HomeScreenEvents {
     ): HomeScreenEvents()
     data class AddTodoItem(val todoItem: TodoEntity): HomeScreenEvents()
     data class ChangeBackground(val bgIndex: Int = 0): HomeScreenEvents()
+    data class UpdateTodoData(val todoEntity: TodoEntity): HomeScreenEvents()
 }

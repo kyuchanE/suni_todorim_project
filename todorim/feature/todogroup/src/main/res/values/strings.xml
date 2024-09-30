@@ -2,4 +2,9 @@
 <resources>
     <string name="create_group_title">그룹 추가</string>
     <string name="str_add">추가</string>
+
+    <string name="modify_group_title">그룹 수정</string>
+    <string name="str_modify">수정</string>
+
+    <string name="delete_group">그룹 삭제</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.suni.todorim.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +10,7 @@ import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.GetGroupDataUseCase
 import com.suni.domain.usecase.GetTodoDataUseCase
+import com.suni.domain.usecase.UpdateTodoDataUseCase
 import com.suni.domain.usecase.WriteGroupDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -24,6 +26,7 @@ class HomeScreenViewModel @Inject constructor(
     private val getGroupDataUseCase: GetGroupDataUseCase,
     private val writeGroupDataUseCase: WriteGroupDataUseCase,
     private val getTodoDataUseCase: GetTodoDataUseCase,
+    private val updateTodoUseCase: UpdateTodoDataUseCase,
 ): ViewModel() {
 
     var state by mutableStateOf(HomeScreenState())
@@ -43,6 +46,19 @@ class HomeScreenViewModel @Inject constructor(
             is HomeScreenEvents.ChangeBackground -> {
                 changeBgColor(event)
             }
+            is HomeScreenEvents.UpdateTodoData -> {
+                updateTodoCompleted(event)
+            }
+        }
+    }
+
+    /**
+     * 할 일 완료 처리
+     */
+    private fun updateTodoCompleted(event: HomeScreenEvents.UpdateTodoData) {
+        viewModelScope.launch {
+            updateTodoUseCase(event.todoEntity)
+            fetchTodoData()
         }
     }
 
@@ -143,6 +159,27 @@ class HomeScreenViewModel @Inject constructor(
         state = state.copy(
             backgroundIndex = event.bgIndex
         )
+    }
+
+    /**
+     * 할 일 진행률
+     */
+    fun getTodoCompletedPercent(groupId: Int): Float {
+        var total = 0
+        var completed = 0
+        state.todoLists.forEach {
+            if (it.groupId == groupId) {
+                total++
+                if (it.isCompleted)
+                    completed++
+            }
+        }
+
+        return if (total == 0 || completed == 0) {
+            0f
+        } else {
+            completed.toFloat() / total.toFloat() * 100
+        }
     }
 
 }
