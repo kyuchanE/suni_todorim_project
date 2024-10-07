@@ -241,7 +241,7 @@ private fun TodoDataList(
                 swipeToDelete = { data ->
                     viewModel.onEvent(
                         GroupDetailScreenEvents.DeleteTodoData(data.todoId) {
-                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId))
+                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId, true))
                         }
                     )
                 },
@@ -251,7 +251,7 @@ private fun TodoDataList(
                 onChangedComplete = { data ->
                     viewModel.onEvent(
                         GroupDetailScreenEvents.UpdateTodoData(data) {
-                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId))
+                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId, true))
                         }
                     )
                 }

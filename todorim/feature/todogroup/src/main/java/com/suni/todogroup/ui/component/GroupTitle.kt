@@ -29,6 +29,10 @@ fun GroupTitle(
     modifier: Modifier,
     isCreateMode: Boolean = true,
 ) {
+    val strTitle =
+        if (isCreateMode) stringResource(id = R.string.create_group_title)
+        else stringResource(id = R.string.modify_group_title)
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -36,10 +40,7 @@ fun GroupTitle(
     ) {
         Spacer(modifier = Modifier.width(24.dp))
         Text(
-            text = if (isCreateMode) stringResource(id = R.string.create_group_title)
-            else stringResource(
-                id = R.string.modify_group_title
-            ),
+            text = strTitle,
         )
         IconButton(onClick = { context.findActivity().finish() }) {
             Icon(

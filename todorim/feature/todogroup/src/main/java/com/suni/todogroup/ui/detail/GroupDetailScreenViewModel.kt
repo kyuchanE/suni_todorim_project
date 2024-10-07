@@ -54,9 +54,6 @@ class GroupDetailScreenViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             deleteTodoDataUseCase(event.todoId)
-            state = state.copy(
-                isNeedRefreshHome = true
-            )
             event.finishedEvent()
         }
     }
@@ -68,9 +65,6 @@ class GroupDetailScreenViewModel @Inject constructor(
     private fun updateTodoCompleted(event: GroupDetailScreenEvents.UpdateTodoData) {
         viewModelScope.launch {
             updateTodoDataUseCase(event.todoEntity)
-            state = state.copy(
-                isNeedRefreshHome = true
-            )
             event.finishedEvent()
         }
     }
@@ -91,25 +85,25 @@ class GroupDetailScreenViewModel @Inject constructor(
             // fetch Group TodoList
             var todoMaxId = -1
             val resultTodoItems = getTodoDataUseCase.getTodoByGroupId(event.groupId)
+            val resultList = mutableListOf<TodoEntity>()
             if (resultTodoItems.isNotEmpty()) {
-                val resultList = mutableListOf<TodoEntity>()
                 resultTodoItems.forEach {
                     resultList.add(it)
                     if (it.todoId > todoMaxId)
                         todoMaxId = it.todoId
                 }
                 resultList.sortBy { it.todoId }
-                state = state.copy(
-                    todoDataList = resultList,
-                    todoMaxId = todoMaxId + 1,
-                    isNeedRefreshHome =
-                    if (event.isNeedRefresh) {
-                        true
-                    } else {
-                        state.isNeedRefreshHome
-                    }
-                )
             }
+            state = state.copy(
+                todoDataList = resultList,
+                todoMaxId = todoMaxId + 1,
+                isNeedRefreshHome =
+                if (event.isNeedRefresh) {
+                    true
+                } else {
+                    state.isNeedRefreshHome
+                }
+            )
         }
 
     }

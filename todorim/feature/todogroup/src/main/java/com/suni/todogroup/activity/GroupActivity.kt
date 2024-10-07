@@ -65,6 +65,7 @@ class GroupActivity : ComponentActivity(){
 
                 when(rememberGroupFlag.value) {
                     GroupScreenFlag.CREATE.name -> {
+                        // 그룹 생성
                         val createGroupViewModel = hiltViewModel<CreateGroupScreenViewModel>()
                         CreateGroupScreen(
                             viewModel = createGroupViewModel,
@@ -76,6 +77,7 @@ class GroupActivity : ComponentActivity(){
                         }
                     }
                     GroupScreenFlag.DETAIL.name -> {
+                        // 그룹 상세
                         val groupDetailViewModel = hiltViewModel<GroupDetailScreenViewModel>()
                         GroupDetailScreen(
                             viewModel = groupDetailViewModel,
@@ -103,6 +105,7 @@ class GroupActivity : ComponentActivity(){
                         )
                     }
                     GroupScreenFlag.MODIFY.name -> {
+                        // 그룹 수정
                         val groupModifyViewModel = hiltViewModel<ModifyGroupScreenViewModel>()
                         ModifyGroupScreen(
                             viewModel = groupModifyViewModel,

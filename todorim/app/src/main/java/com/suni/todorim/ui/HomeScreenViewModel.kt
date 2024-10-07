@@ -104,11 +104,10 @@ class HomeScreenViewModel @Inject constructor(
             realmResult.forEach { todoEntity ->
                 todoList.add(todoEntity)
             }
-
-            state = state.copy(
-                todoLists = todoList
-            )
         }
+        state = state.copy(
+            todoLists = todoList
+        )
     }
 
     /**

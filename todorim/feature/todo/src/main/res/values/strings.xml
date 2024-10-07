@@ -2,4 +2,7 @@
 <resources>
     <string name="create_todo_title">할 일 추가</string>
     <string name="str_add">추가</string>
+
+    <string name="modify_todo_title">할 일 수정</string>
+    <string name="str_modify">수정</string>
 </resources>
