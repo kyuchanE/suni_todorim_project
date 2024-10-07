@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">suni_todorim</string>
+
+    <string name="str_setting">설정</string>
 </resources>

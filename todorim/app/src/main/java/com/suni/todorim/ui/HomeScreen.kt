@@ -28,34 +28,49 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
+import com.suni.domain.L
 import com.suni.domain.findActivity
 import com.suni.domain.getDayOfWeek
 import com.suni.domain.getStrHomeDate
 import com.suni.navigator.GroupScreenFlag
+import com.suni.todorim.R
 import com.suni.ui.component.LinearGradientProgressIndicator
 import com.suni.ui.component.TdrOnlyCheckBox
 import com.suni.ui.component.bgGradient
 import kotlinx.coroutines.launch
+
+enum class RefreshHomeFlag {
+    CREATE_GROUP,
+    UPDATE_GROUP,
+    NONE,
+}
 
 /**
  * 메인 홈 화면
@@ -74,7 +89,6 @@ fun HomeScreen(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     ) -> Unit = { _, _, _, _, _ -> },
 ) {
-
     LaunchedEffect(Unit) {
         viewModel.onEvent(HomeScreenEvents.LoadLocalData)
     }
@@ -102,7 +116,7 @@ fun HomeScreen(
  * @param todoNavigatorAction
  * @param groupNavigatorAction
  */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeBody(
     vm: HomeScreenViewModel,
@@ -118,6 +132,7 @@ private fun HomeBody(
     val pageState = rememberPagerState(
         pageCount = { vm.state.groupLists.size }
     )
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(pageState) {
         snapshotFlow { pageState.currentPage }.collect { page ->
@@ -147,19 +162,14 @@ private fun HomeBody(
                 .fillMaxHeight()
         )
         // 상단 날짜 및 설정 아이콘
-        Row(
+        HomeScreenTitle(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 15.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = getStrHomeDate())
-            IconButton(onClick = {
-                // TODO 설정 페이지 이동
-            }) {
-                Icon(imageVector = Icons.Filled.Settings, contentDescription = null)
-            }
+            showBottomSheet = true
         }
+        // 요일
         Text(text = getDayOfWeek())
         // 할일 목록
         HorizontalPager(
@@ -179,17 +189,60 @@ private fun HomeBody(
                 maxGroupId = vm.state.maxGroupId,
                 maxOrderId = vm.state.maxOrder,
                 groupNavigatorAction = groupNavigatorAction,
-            ) {
+            ) { flag ->
                 // 페이지 생성 후 페이지 전환 (새로 생상한 페이지로 포커스)
                 coroutineScope.launch {
-                    pageState.scrollToPage(pageState.pageCount - 2)
+                    val orderIndex = when (flag) {
+                        RefreshHomeFlag.UPDATE_GROUP -> vm.getGroupOrder(group.groupId)
+                        RefreshHomeFlag.CREATE_GROUP -> vm.getLastGroupOrder()
+                        else -> 0
+                    }
+
+                    pageState.scrollToPage(orderIndex)
                     vm.changeBgColor(
                         HomeScreenEvents.ChangeBackground(
-                            vm.state.groupLists[pageState.pageCount - 2].appColorIndex
+                            vm.state.groupLists[orderIndex].appColorIndex
                         )
                     )
                 }
             }
+        }
+        // 설정 모달
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                modifier = Modifier.padding(top = 25.dp),
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+            ) {
+                ModalBottomContainer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 타이틀
+ * @param modifier
+ * @param settingOnClickEvent 설정 아이콘 클릭
+ */
+@Composable
+private fun HomeScreenTitle(
+    modifier: Modifier,
+    settingOnClickEvent: () -> Unit,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = getStrHomeDate())
+        IconButton(onClick = settingOnClickEvent) {
+            Icon(imageVector = Icons.Filled.Settings, contentDescription = null)
         }
     }
 }
@@ -214,19 +267,19 @@ private fun GroupContainer(
         maxOrderId: Int,
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     ) -> Unit = { _, _, _, _, _ -> },
-    refreshNewPage: () -> Unit = {}
+    refreshNewPage: (flag: RefreshHomeFlag) -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val refreshFlag = remember {
-        mutableStateOf(false)
+        mutableStateOf(RefreshHomeFlag.NONE)
     }
 
     val createGroupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            refreshFlag.value = true
+            refreshFlag.value = RefreshHomeFlag.CREATE_GROUP
         }
     }
 
@@ -234,16 +287,16 @@ private fun GroupContainer(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            refreshFlag.value = true
+            refreshFlag.value = RefreshHomeFlag.UPDATE_GROUP
         }
     }
 
     LaunchedEffect(refreshFlag.value) {
-        if (refreshFlag.value) {
+        if (refreshFlag.value != RefreshHomeFlag.NONE) {
             coroutineScope.launch {
-                refreshFlag.value = false
                 vm.onEvent(HomeScreenEvents.LoadLocalData)
-                refreshNewPage()
+                refreshNewPage(refreshFlag.value)
+                refreshFlag.value = RefreshHomeFlag.NONE
             }
         }
     }
@@ -340,4 +393,53 @@ private fun GroupContainer(
 
     }
 
+}
+
+/**
+ * 설정 모달 뷰
+ */
+@Composable
+private fun ModalBottomContainer(
+    modifier: Modifier,
+) {
+    LazyColumn(
+        modifier = modifier,
+    ) {
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+        item {
+            Text(text = stringResource(id = R.string.str_setting))
+            Spacer(modifier = Modifier.height(65.dp))
+        }
+    }
 }

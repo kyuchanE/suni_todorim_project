@@ -12,7 +12,6 @@ sealed class HomeScreenEvents {
         val endColorHex: String = "",
         val appColorIndex: Int = 0,
     ): HomeScreenEvents()
-    data class AddTodoItem(val todoItem: TodoEntity): HomeScreenEvents()
     data class ChangeBackground(val bgIndex: Int = 0): HomeScreenEvents()
     data class UpdateTodoData(val todoEntity: TodoEntity): HomeScreenEvents()
 }

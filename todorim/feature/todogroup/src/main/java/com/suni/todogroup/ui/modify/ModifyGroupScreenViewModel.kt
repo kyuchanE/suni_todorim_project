@@ -105,7 +105,7 @@ class ModifyGroupScreenViewModel @Inject constructor(
             }
 
             state = state.copy(
-                isFinishedModify = true
+                isFinishedDelete = true
             )
         }
     }

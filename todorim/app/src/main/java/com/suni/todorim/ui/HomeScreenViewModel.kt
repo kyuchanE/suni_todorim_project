@@ -1,6 +1,5 @@
 package com.suni.todorim.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
+import com.suni.domain.L
 import com.suni.domain.usecase.GetGroupDataUseCase
 import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
@@ -36,9 +36,6 @@ class HomeScreenViewModel @Inject constructor(
         when(event) {
             is HomeScreenEvents.AddGroupItem -> {
                 addGroupItem(event)
-            }
-            is HomeScreenEvents.AddTodoItem -> {
-
             }
             is HomeScreenEvents.LoadLocalData -> {
                 fetchAll()
@@ -180,6 +177,27 @@ class HomeScreenViewModel @Inject constructor(
         } else {
             completed.toFloat() / total.toFloat() * 100
         }
+    }
+
+    /**
+     * 해당 그룹 순서 반환
+     * @param groupId
+     */
+    fun getGroupOrder(groupId: Int): Int {
+        var returnOrder = 0
+        run loop@ {
+            state.groupLists.forEachIndexed { index, groupEntity ->
+                if (groupEntity.groupId == groupId) {
+                    returnOrder = index
+                    return@loop
+                }
+            }
+        }
+        return returnOrder
+    }
+
+    fun getLastGroupOrder(): Int {
+        return state.groupLists.lastIndex - 1
     }
 
 }
