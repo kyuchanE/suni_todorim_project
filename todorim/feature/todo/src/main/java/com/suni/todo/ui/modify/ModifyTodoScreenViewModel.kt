@@ -64,7 +64,7 @@ class ModifyTodoScreenViewModel @Inject constructor(
      */
     private fun getTodoData(event: ModifyTodoScreenEvents.LoadTodoData) {
         viewModelScope.launch {
-            val result = getTodoDataUseCase.getTodoByGroupId(event.todoId)
+            val result = getTodoDataUseCase.getTodoByTodoId(event.todoId)
 
             if (result.isNotEmpty()) {
                state = state.copy(

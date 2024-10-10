@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_palette_title">배경 색상 선택</string>
+    
+    <string name="time_alarm_title">특정 시간에 알리기</string>
+    <string name="time_repeating_none">반복안함</string>
+    <string name="time_repeating_every_day">매일</string>
+    <string name="time_repeating_every_week">매주</string>
+    <string name="time_repeating_every_month">매월</string>
 </resources>

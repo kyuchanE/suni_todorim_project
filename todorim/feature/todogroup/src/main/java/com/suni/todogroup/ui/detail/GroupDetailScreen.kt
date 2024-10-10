@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -37,9 +36,6 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,8 +43,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.suni.data.model.GroupEntity
@@ -60,7 +54,6 @@ import com.suni.ui.R
 import com.suni.ui.component.GradientFloatingActionButton
 import com.suni.ui.component.LinearGradientProgressIndicator
 import com.suni.ui.component.TdrCheckBox
-import kotlinx.coroutines.launch
 
 @Composable
 fun GroupDetailScreen(
@@ -73,6 +66,11 @@ fun GroupDetailScreen(
         groupColorIndex: Int,
     ) -> Unit = { _, _, _ -> },
     moveGroupModifyScreenAction: () -> Unit = {},
+    moveTodoModifyScreenAction: (
+        launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+        todoId: Int,
+        groupColorIndex: Int,
+    ) -> Unit = { _, _, _ -> },
     refreshHomeScreenAction: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -86,10 +84,10 @@ fun GroupDetailScreen(
         viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId))
     }
 
-    val createTodoLauncher = rememberLauncherForActivityResult(
+    val todoScreenLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        // 할 일 생성 후 
+        // 할 일 생성 후, 수정 후
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId, true))
         }
@@ -140,7 +138,14 @@ fun GroupDetailScreen(
                 TodoDataList(
                     modifier = Modifier.fillMaxWidth(),
                     viewModel = viewModel,
-                    groupTodoList = groupTodoList
+                    groupTodoList = groupTodoList,
+                    moveTodoModifyScreenAction = { todoId ->
+                        moveTodoModifyScreenAction(
+                            todoScreenLauncher,
+                            todoId,
+                            viewModel.state.groupData.appColorIndex,
+                        )
+                    }
                 )
             }
             // 하단 할 일 생성 버튼
@@ -151,7 +156,7 @@ fun GroupDetailScreen(
                 icon = Icons.Filled.Add,
             ) {
                 todoNavigatorAction(
-                    createTodoLauncher,
+                    todoScreenLauncher,
                     viewModel.state.todoMaxId,
                     viewModel.state.groupData.appColorIndex,
                 )
@@ -223,7 +228,8 @@ private fun GroupDetailTitle(
 private fun TodoDataList(
     modifier: Modifier,
     viewModel: GroupDetailScreenViewModel,
-    groupTodoList: MutableList<TodoEntity>
+    groupTodoList: MutableList<TodoEntity>,
+    moveTodoModifyScreenAction: (todoId: Int) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -238,20 +244,20 @@ private fun TodoDataList(
             TodoItemComponent(
                 modifier = Modifier.fillMaxSize(),
                 todoData = todoData,
-                swipeToDelete = { data ->
+                swipeToDelete = { todoEntity ->
                     viewModel.onEvent(
-                        GroupDetailScreenEvents.DeleteTodoData(data.todoId) {
-                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId, true))
+                        GroupDetailScreenEvents.DeleteTodoData(todoEntity.todoId) {
+                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(todoEntity.groupId, true))
                         }
                     )
                 },
-                swipeToEnter = { data ->
-
+                swipeToEnter = { todoEntity ->
+                    moveTodoModifyScreenAction(todoEntity.todoId)
                 },
-                onChangedComplete = { data ->
+                onChangedComplete = { todoEntity ->
                     viewModel.onEvent(
-                        GroupDetailScreenEvents.UpdateTodoData(data) {
-                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(data.groupId, true))
+                        GroupDetailScreenEvents.UpdateTodoData(todoEntity) {
+                            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(todoEntity.groupId, true))
                         }
                     )
                 }

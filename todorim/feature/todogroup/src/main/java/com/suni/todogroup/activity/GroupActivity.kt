@@ -18,8 +18,11 @@ import com.suni.navigator.KEY_GROUP_COLOR_INDEX
 import com.suni.navigator.KEY_GROUP_ID
 import com.suni.navigator.KEY_GROUP_MAX_ID
 import com.suni.navigator.KEY_GROUP_MAX_ORDER_ID
+import com.suni.navigator.KEY_TODO_FLAG
+import com.suni.navigator.KEY_TODO_ID
 import com.suni.navigator.KEY_TODO_MAX_ID
 import com.suni.navigator.TodoNavigator
+import com.suni.navigator.TodoScreenFlag
 import com.suni.todogroup.ui.create.CreateGroupScreen
 import com.suni.todogroup.ui.create.CreateGroupScreenViewModel
 import com.suni.todogroup.ui.detail.GroupDetailScreen
@@ -101,6 +104,18 @@ class GroupActivity : ComponentActivity(){
                             },
                             moveGroupModifyScreenAction = {
                                 rememberGroupFlag.value = GroupScreenFlag.MODIFY.name
+                            },
+                            moveTodoModifyScreenAction = { launcher, todoId, groupColorIndex ->
+                                todoNavigator.containResultNavigateFrom(
+                                    activity = this,
+                                    withFinish = false,
+                                    activityResultLauncher = launcher,
+                                    intentBuilder = {
+                                        putExtra(KEY_TODO_ID, todoId)
+                                        putExtra(KEY_GROUP_COLOR_INDEX, groupColorIndex)
+                                        putExtra(KEY_TODO_FLAG, TodoScreenFlag.MODIFY.name)
+                                    }
+                                )
                             },
                         )
                     }

@@ -30,7 +30,7 @@ class TodoActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val todoScreenFlag =
-            intent.getStringExtra(KEY_TODO_FLAG) ?: TodoScreenFlag.CREATE
+            intent.getStringExtra(KEY_TODO_FLAG) ?: TodoScreenFlag.CREATE.name
         val groupId =
             intent.getIntExtra(KEY_GROUP_ID, 0)
         val todoId =
@@ -43,7 +43,7 @@ class TodoActivity : ComponentActivity() {
         setContent {
             SuniTodorimTheme {
                 when (todoScreenFlag) {
-                    TodoScreenFlag.CREATE -> {
+                    TodoScreenFlag.CREATE.name -> {
                         // 할 일 생성
                         val viewModel = hiltViewModel<CreateTodoScreenViewModel>()
                         CreateTodoScreen(
@@ -57,7 +57,7 @@ class TodoActivity : ComponentActivity() {
                         }
                     }
 
-                    TodoScreenFlag.MODIFY -> {
+                    TodoScreenFlag.MODIFY.name -> {
                         // 할 일 수정
                         val viewModel = hiltViewModel<ModifyTodoScreenViewModel>()
                         ModifyTodoScreen(

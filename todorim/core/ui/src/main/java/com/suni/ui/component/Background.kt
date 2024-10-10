@@ -27,7 +27,7 @@ fun bgGradient(
     }
 }
 
-private fun startColor(bgIndex: Int): Int {
+fun startColor(bgIndex: Int): Int {
     return when(bgIndex) {
         1 -> R.color.gradient_start_1
         2 -> R.color.gradient_start_2
@@ -42,7 +42,7 @@ private fun startColor(bgIndex: Int): Int {
     }
 }
 
-private fun endColor(bgIndex: Int): Int {
+fun endColor(bgIndex: Int): Int {
     return when(bgIndex) {
         1 -> R.color.gradient_end_1
         2 -> R.color.gradient_end_2

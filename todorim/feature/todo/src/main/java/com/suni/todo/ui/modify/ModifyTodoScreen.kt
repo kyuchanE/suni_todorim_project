@@ -1,5 +1,6 @@
 package com.suni.todo.ui.modify
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +18,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.suni.domain.findActivity
 import com.suni.todo.R
 import com.suni.todo.ui.component.InputTodoTitle
 import com.suni.todo.ui.component.TodoTitle
 import com.suni.ui.component.GradientButton
+import com.suni.ui.component.TimeAlarmContainer
+import com.suni.ui.component.TypeTimeRepeating
 
 @Composable
 fun ModifyTodoScreen(
@@ -30,17 +34,20 @@ fun ModifyTodoScreen(
     finishAndRefreshActivityAction: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val strTodoTitle = remember { mutableStateOf(viewModel.state.todoData.title) }
-    val isFinished = remember { mutableStateOf(viewModel.state.isFinished) }
+
+    val strTodoTitle = remember { mutableStateOf("") }
+    val timeAlarm = remember { mutableStateOf(false) }
+    val timeAlarmType = remember { mutableStateOf(TypeTimeRepeating.NONE) }
 
     LaunchedEffect(Unit) {
         // 할 일 정보 조회
         viewModel.onEvent(ModifyTodoScreenEvents.LoadTodoData(todoId))
+        strTodoTitle.value = viewModel.state.todoData.title
     }
 
-    LaunchedEffect(isFinished) {
+    LaunchedEffect(viewModel.state.isFinished) {
         // 수정 완료 후
-        if (isFinished.value)
+        if (viewModel.state.isFinished)
             finishAndRefreshActivityAction()
     }
 
@@ -74,6 +81,21 @@ fun ModifyTodoScreen(
                         ) { title ->
                             strTodoTitle.value = title
                         }
+                    }
+                    item {
+                        // 특정 시간 알림
+                        TimeAlarmContainer(
+                            modifier = Modifier.fillMaxWidth(),
+                            colorIndex = groupColorIndex,
+                            type = timeAlarmType.value,
+                            isChecked = timeAlarm.value,
+                            onCheckedChangedEvent = { checked ->
+                                timeAlarm.value = checked
+                            },
+                            onTypeClickEvent = { type ->
+                                timeAlarmType.value = type
+                            }
+                        )
                     }
                 }
                 // 하단 버튼

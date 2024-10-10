@@ -20,4 +20,7 @@ class GetTodoDataUseCase @Inject constructor(
     fun getTodoByGroupId(groupId: Int): RealmResults<TodoEntity> =
         realm.query<TodoEntity>("groupId = $0", groupId).find()
 
+    fun getTodoByTodoId(todoId: Int): RealmResults<TodoEntity> =
+        realm.query<TodoEntity>("todoId = $0", todoId).find()
+
 }
