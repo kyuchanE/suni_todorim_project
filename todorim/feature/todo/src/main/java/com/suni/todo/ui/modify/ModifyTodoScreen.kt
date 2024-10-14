@@ -1,6 +1,5 @@
 package com.suni.todo.ui.modify
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,13 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.suni.domain.findActivity
 import com.suni.todo.R
 import com.suni.todo.ui.component.InputTodoTitle
+import com.suni.todo.ui.component.TimeAlarmContainer
 import com.suni.todo.ui.component.TodoTitle
+import com.suni.todo.ui.component.TypeTimeRepeating
 import com.suni.ui.component.GradientButton
-import com.suni.ui.component.TimeAlarmContainer
-import com.suni.ui.component.TypeTimeRepeating
 
 @Composable
 fun ModifyTodoScreen(

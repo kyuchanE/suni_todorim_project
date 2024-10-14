@@ -61,6 +61,18 @@ fun String.getTimeNow(): String {
 }
 
 /**
+ * SimpleDateFormat "yyyyMMdd"
+ * @return Date
+ */
+fun String.toDate(): Date? {
+    return try {
+        SimpleDateFormat("yyyyMMdd").parse(this)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+/**
  * @return String 메인 월/일 표시
  */
 fun getStrHomeDate(): String {
@@ -78,6 +90,7 @@ fun getStrHomeDate(): String {
  */
 fun getDayOfWeek(): String {
     return try {
+        // TODO chan 이상한디...
         val cal = Calendar.getInstance()
         cal.time = Date()
         L.d("getDayOfWeek today : ${cal.get(Calendar.DAY_OF_WEEK)}")
@@ -103,6 +116,36 @@ fun getDayOfWeek(): String {
     } catch (e: Exception) {
         L.e(e.message)
         ""
+    }
+}
+
+/**
+ *
+ */
+fun Date.toFullString(): String? {
+    return try {
+        val calendar = Calendar.getInstance()
+        calendar.time = this
+
+        "${calendar.get(Calendar.YEAR)}년 " +
+                "${calendar.get(Calendar.MONTH) + 1}월 " +
+                "${calendar.get(Calendar.DAY_OF_MONTH)} " +
+                "(${calendar.get(Calendar.DAY_OF_WEEK).getDayOfWeek()})"
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun Int.getDayOfWeek(): String {
+    return when(this) {
+        1 -> "일요일"
+        2 -> "월요일"
+        3 -> "화요일"
+        4 -> "수요일"
+        5 -> "목요일"
+        6 -> "금요일"
+        7 -> "토요일"
+        else -> ""
     }
 }
 
