@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.map
 fun TdrPicker(
     modifier: Modifier,
     state: PickerState = rememberPickerState(),
-    items: MutableList<String>,
+    items: List<String>,
     visibleItemsCount: Int = 3,
     startIndex: Int = 0,
     textModifier: Modifier = Modifier,
@@ -82,7 +82,7 @@ fun TdrPicker(
                 .height(itemHeightDp * visibleItemsCount)
                 .fadingEdge(fadingEdgeGradient)
         ) {
-            items(listScrollCount) { index ->
+            items(count = listScrollCount) { index ->
                 Text(
                     text = getItem(index),
                     maxLines = 1,

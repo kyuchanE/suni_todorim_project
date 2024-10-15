@@ -34,6 +34,7 @@ import com.suni.domain.toDate
 import com.suni.domain.toFullString
 import com.suni.ui.R
 import com.suni.ui.component.BottomArrowSelectBox
+import com.suni.ui.component.TdrDatePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -333,9 +334,14 @@ private fun SelectTimeBottomModalContainer(
     var selectedValue by remember { mutableStateOf("") }
 
     Column(
-        modifier = modifier.height(65.dp),
+        modifier = modifier.height(155.dp),
     ) {
+        // 시간 선택
+        TdrDatePicker(modifier = Modifier.fillMaxWidth(), yearNow = 2025)
+        Spacer(modifier = Modifier.height(55.dp))
+        // 확인 버튼
         Button(
+            modifier = Modifier.fillMaxWidth(),
             onClick = {
                 onTopButtonClickEvent(selectedValue)
             },
@@ -356,9 +362,14 @@ private fun SelectRepeatingTypeBottomModalContainer(
     var selectedValue by remember { mutableStateOf("") }
 
     Column(
-        modifier = modifier.height(65.dp),
+        modifier = modifier.height(155.dp),
     ) {
+        // 시간 선택
+        TdrDatePicker(modifier = Modifier.fillMaxWidth(), yearNow = 2025)
+        Spacer(modifier = Modifier.height(55.dp))
+        // 확인 버튼
         Button(
+            modifier = Modifier.fillMaxWidth(),
             onClick = {
                 onTopButtonClickEvent(selectedValue)
             },
