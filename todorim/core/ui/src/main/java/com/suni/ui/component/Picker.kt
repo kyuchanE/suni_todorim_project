@@ -3,6 +3,7 @@ package com.suni.ui.component
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -109,12 +110,98 @@ fun TdrPicker(
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TdrTimePicker(
+    modifier: Modifier,
+    state: PickerState = rememberPickerState(),
+    items: List<String>,
+    visibleItemsCount: Int = 3,
+    startIndex: Int = 0,
+    textModifier: Modifier = Modifier,
+    textStyle: TextStyle = LocalTextStyle.current,
+    dividerColor: Color = LocalContentColor.current,
+) {
+    val listScrollCount = items.size
+
+    fun getItem(index: Int) = items[index]
+
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = startIndex)
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+    val itemHeightPixels = remember { mutableStateOf(0) }
+    val itemHeightDp = pixelsToDp(itemHeightPixels.value)
+
+    val fadingEdgeGradient = remember {
+        Brush.verticalGradient(
+            0f to Color.Transparent,
+            0.5f to Color.Black,
+            1f to Color.Transparent
+        )
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .map { index ->
+                if (index <= 1) {
+                    getItem(0)
+                } else {
+                    getItem(1)
+                }
+            }
+            .distinctUntilChanged()
+            .collect { item -> state.selectedItem = item }
+    }
+
+    Box(modifier = modifier) {
+        LazyColumn(
+            state = listState,
+            flingBehavior = flingBehavior,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(itemHeightDp * visibleItemsCount)
+                .fadingEdge(fadingEdgeGradient)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(itemHeightDp))
+            }
+            items(count = listScrollCount) { index ->
+                Text(
+                    text = getItem(index),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = textStyle,
+                    modifier = Modifier
+                        .onSizeChanged { size -> itemHeightPixels.value = size.height }
+                        .then(textModifier)
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(itemHeightDp))
+            }
+        }
+
+//        HorizontalDivider(
+//            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
+//            color = dividerColor,
+//        )
+//
+//        HorizontalDivider(
+//            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
+//            color = dividerColor,
+//        )
+
+    }
+
+}
+
 private fun Modifier.fadingEdge(brush: Brush) = this
     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
     .drawWithContent {
         drawContent()
         drawRect(brush = brush, blendMode = BlendMode.DstIn)
-}
+    }
 
 @Composable
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }

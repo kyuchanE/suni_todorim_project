@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -34,8 +33,8 @@ import com.suni.domain.toDate
 import com.suni.domain.toFullString
 import com.suni.ui.R
 import com.suni.ui.component.BottomArrowSelectBox
+import com.suni.ui.component.TdrTimePickerContainer
 import com.suni.ui.component.TdrDatePicker
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 enum class TypeTimeRepeating(val titleStrId: Int) {
@@ -70,6 +69,7 @@ fun TimeAlarmContainer(
 
     var showTypeOptionBottomSheet by remember { mutableStateOf(false) }
     var showTimeBottomSheet by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedTimeOption.isNotEmpty()
             || selectedTypeOption.isNotEmpty()) {
@@ -109,8 +109,13 @@ fun TimeAlarmContainer(
                 modifier = Modifier.fillMaxWidth(),
                 selectedType = type,
             ) {
-                // 반복 옵션 설정 값 선택 모달 뷰 (반복 할 특정 날짜, 요일, 일)
-                showTypeOptionBottomSheet = true
+                if (type == TypeTimeRepeating.NONE) {
+                    // 반복 안함 특정 날짜 선택
+                    showDatePicker = true
+                } else {
+                    // 반복 옵션 설정 값 선택 모달 뷰 (반복 할 특정 날짜, 요일, 일)
+                    showTypeOptionBottomSheet = true
+                }
             }
             Spacer(modifier = Modifier.height(15.dp))
             // 반복 시간 선택
@@ -120,6 +125,19 @@ fun TimeAlarmContainer(
             ) {
                 // 반복 시간 선택 모달 뷰
                 showTimeBottomSheet = true
+            }
+            // 날짜 선택 피커
+            if (showDatePicker) {
+                TdrDatePicker(
+                    modifier = Modifier.fillMaxWidth(),
+                    yearNow = 2024,
+                    onDateSelected = {
+                        showDatePicker = false
+                    },
+                    onDismiss = {
+                        showDatePicker = false
+                    },
+                )
             }
             // 모달 뷰
             if (showTypeOptionBottomSheet || showTimeBottomSheet) {
@@ -135,8 +153,9 @@ fun TimeAlarmContainer(
                 ) {
                     if (showTimeBottomSheet) {
                         // 반복 시간 선택
-                        SelectTimeBottomModalContainer(
-                            modifier = Modifier,
+                        // 시간 선택
+                        TdrTimePickerContainer(
+                            modifier = Modifier.fillMaxWidth()
                         ) { selectedValue ->
                             coroutineScope.launch {
                                 sheetState.hide()
@@ -324,34 +343,6 @@ private fun RepeatingOptionContainer(
 }
 
 /**
- * 시간 선택 모달
- */
-@Composable
-private fun SelectTimeBottomModalContainer(
-    modifier: Modifier,
-    onTopButtonClickEvent: (selectedValue: String) -> Unit = {_ -> },
-) {
-    var selectedValue by remember { mutableStateOf("") }
-
-    Column(
-        modifier = modifier.height(155.dp),
-    ) {
-        // 시간 선택
-        TdrDatePicker(modifier = Modifier.fillMaxWidth(), yearNow = 2025)
-        Spacer(modifier = Modifier.height(55.dp))
-        // 확인 버튼
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                onTopButtonClickEvent(selectedValue)
-            },
-        ) {
-            Text(text = "확인")
-        }
-    }
-}
-
-/**
  * 반복 옵션 모달
  */
 @Composable
@@ -365,7 +356,7 @@ private fun SelectRepeatingTypeBottomModalContainer(
         modifier = modifier.height(155.dp),
     ) {
         // 시간 선택
-        TdrDatePicker(modifier = Modifier.fillMaxWidth(), yearNow = 2025)
+        TdrTimePickerContainer(modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(55.dp))
         // 확인 버튼
         Button(
