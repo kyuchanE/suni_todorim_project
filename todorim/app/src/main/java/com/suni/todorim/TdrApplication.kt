@@ -2,7 +2,6 @@ package com.suni.todorim
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import io.realm.kotlin.Realm
 
 /**
  * [Application] class for ToDoRim

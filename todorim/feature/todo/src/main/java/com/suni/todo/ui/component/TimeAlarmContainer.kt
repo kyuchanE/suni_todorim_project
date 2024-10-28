@@ -33,8 +33,10 @@ import com.suni.domain.toDate
 import com.suni.domain.toFullString
 import com.suni.ui.R
 import com.suni.ui.component.BottomArrowSelectBox
+import com.suni.ui.component.SelectOnePickerType
 import com.suni.ui.component.TdrTimePickerContainer
 import com.suni.ui.component.TdrDatePicker
+import com.suni.ui.component.TdrSelectOnePickerContainer
 import kotlinx.coroutines.launch
 
 enum class TypeTimeRepeating(val titleStrId: Int) {
@@ -46,8 +48,10 @@ enum class TypeTimeRepeating(val titleStrId: Int) {
 
 /**
  * 특정 시간 알림 설정
- * @param onCheckedChangedEvent 시간 알림 설정 후
- * @param onTypeClickEvent 반복 알림 설정 후
+ * @param onCheckedChangedEvent 시간 알림 설정
+ * @param onTypeClickEvent 반복 알림 설정 
+ * @param selectedTypeOption 반복 옵션 선택 (특정날짜, 요일반복, 월 반복)
+ * @param selectedTimeOptionEvent 시간 반복 옵션 선택 (시간 반복)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +63,9 @@ fun TimeAlarmContainer(
     selectedTimeOption: String = "",
     colorIndex: Int,
     onCheckedChangedEvent: (checked: Boolean) -> Unit = {_ ->},
-    onTypeClickEvent: (type: TypeTimeRepeating) -> Unit = {_ ->}
+    onTypeClickEvent: (type: TypeTimeRepeating) -> Unit = {_ ->},
+    selectedTypeOptionEvent: (typeOption: String) -> Unit = {_->},
+    selectedTimeOptionEvent: (timeOption: String) -> Unit = {_->},
 ) {
 
     var repeatingTypeNoneOption by remember { mutableStateOf("") }
@@ -108,20 +114,29 @@ fun TimeAlarmContainer(
             RepeatingOptionContainer(
                 modifier = Modifier.fillMaxWidth(),
                 selectedType = type,
+                selectedOptionValue = selectedTypeOption,
             ) {
-                if (type == TypeTimeRepeating.NONE) {
-                    // 반복 안함 특정 날짜 선택
-                    showDatePicker = true
-                } else {
-                    // 반복 옵션 설정 값 선택 모달 뷰 (반복 할 특정 날짜, 요일, 일)
-                    showTypeOptionBottomSheet = true
+                when(type) {
+                    TypeTimeRepeating.NONE -> {
+                        // 반복 안함 특정 날짜 선택
+                        showDatePicker = true
+                    }
+                    TypeTimeRepeating.DAY -> {
+                        // 매일
+                    }
+                    else -> {
+                        // 반복 옵션 설정 값 선택 모달 뷰 (반복 할 특정 날짜, 요일, 일)
+                        showTypeOptionBottomSheet = true
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))
             // 반복 시간 선택
             BottomArrowSelectBox(
                 modifier = Modifier.fillMaxWidth(),
-                title = stringResource(id = com.suni.todo.R.string.str_time_hint),
+                title = selectedTimeOption.ifEmpty {
+                    stringResource(id = com.suni.todo.R.string.str_time_hint)
+                },
             ) {
                 // 반복 시간 선택 모달 뷰
                 showTimeBottomSheet = true
@@ -131,8 +146,9 @@ fun TimeAlarmContainer(
                 TdrDatePicker(
                     modifier = Modifier.fillMaxWidth(),
                     yearNow = 2024,
-                    onDateSelected = {
+                    onDateSelected = { date ->
                         showDatePicker = false
+                        selectedTypeOptionEvent(date.toFullString() ?: "")
                     },
                     onDismiss = {
                         showDatePicker = false
@@ -153,12 +169,12 @@ fun TimeAlarmContainer(
                 ) {
                     if (showTimeBottomSheet) {
                         // 반복 시간 선택
-                        // 시간 선택
                         TdrTimePickerContainer(
                             modifier = Modifier.fillMaxWidth()
                         ) { selectedValue ->
                             coroutineScope.launch {
                                 sheetState.hide()
+                                selectedTimeOptionEvent(selectedValue)
                             }.invokeOnCompletion {
                                 showTimeBottomSheet = false
                                 showTypeOptionBottomSheet = false
@@ -166,11 +182,18 @@ fun TimeAlarmContainer(
                         }
                     } else if (showTypeOptionBottomSheet) {
                         // 반복 옵션 설정 값 선택 (반복 할 특정 날짜, 요일, 일)
-                        SelectRepeatingTypeBottomModalContainer(
-                            modifier = Modifier,
+                        val pickerType =
+                            if (type == TypeTimeRepeating.WEEK)
+                                SelectOnePickerType.DAY_OF_WEEK
+                            else SelectOnePickerType.DAY
+
+                        TdrSelectOnePickerContainer(
+                            modifier = Modifier.fillMaxWidth(),
+                            type = pickerType
                         ) { selectedValue ->
                             coroutineScope.launch {
                                 sheetState.hide()
+                                selectedTypeOptionEvent(selectedValue.toString())
                             }.invokeOnCompletion {
                                 showTimeBottomSheet = false
                                 showTypeOptionBottomSheet = false
@@ -194,12 +217,10 @@ private fun TimeAlarmTitle(
     colorIndex: Int,
     onCheckedChangedEvent: (checked: Boolean) -> Unit = {_ ->},
 ) {
-    val rememberChecked = remember {
-        mutableStateOf(false)
-    }
+    var rememberChecked by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        rememberChecked.value = isChecked
+        rememberChecked = isChecked
     }
 
     Row(
@@ -210,9 +231,9 @@ private fun TimeAlarmTitle(
             text = stringResource(id = R.string.time_alarm_title),
         )
         Switch(
-            checked = rememberChecked.value,
+            checked = rememberChecked,
             onCheckedChange = { checked ->
-                rememberChecked.value = checked
+                rememberChecked = checked
                 onCheckedChangedEvent(checked)
             }
         )
@@ -331,7 +352,7 @@ private fun RepeatingOptionContainer(
 
     var rememberOptionTitle by remember { mutableStateOf("") }
 
-    LaunchedEffect(selectedType) {
+    LaunchedEffect(selectedType, selectedOptionValue) {
         rememberOptionTitle = initTitleStr
     }
 
@@ -340,32 +361,4 @@ private fun RepeatingOptionContainer(
         title = rememberOptionTitle,
         onClickEvent = selectedOptionEvent
     )
-}
-
-/**
- * 반복 옵션 모달
- */
-@Composable
-private fun SelectRepeatingTypeBottomModalContainer(
-    modifier: Modifier,
-    onTopButtonClickEvent: (selectedValue: String) -> Unit = {_ ->},
-) {
-    var selectedValue by remember { mutableStateOf("") }
-
-    Column(
-        modifier = modifier.height(155.dp),
-    ) {
-        // 시간 선택
-        TdrTimePickerContainer(modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(55.dp))
-        // 확인 버튼
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                onTopButtonClickEvent(selectedValue)
-            },
-        ) {
-            Text(text = "확인")
-        }
-    }
 }

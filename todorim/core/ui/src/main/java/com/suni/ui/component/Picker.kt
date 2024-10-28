@@ -143,11 +143,7 @@ fun TdrTimePicker(
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .map { index ->
-                if (index <= 1) {
-                    getItem(0)
-                } else {
-                    getItem(1)
-                }
+                getItem(index)
             }
             .distinctUntilChanged()
             .collect { item -> state.selectedItem = item }

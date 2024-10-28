@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 @Composable
 fun InputTodoTitle(
     modifier: Modifier,
-    strTitle: MutableState<String>,
+    strTitle: String,
     titleChangeEvent: (title: String) -> Unit = { _ -> },
 ) {
     TextField(
         modifier = modifier,
-        value = strTitle.value,
+        value = strTitle,
         onValueChange = { titleChangeEvent(it) }
     )
 }

@@ -10,8 +10,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -33,14 +35,14 @@ fun ModifyTodoScreen(
 ) {
     val context = LocalContext.current
 
-    val strTodoTitle = remember { mutableStateOf("") }
-    val timeAlarm = remember { mutableStateOf(false) }
-    val timeAlarmType = remember { mutableStateOf(TypeTimeRepeating.NONE) }
+    var strTodoTitle by remember { mutableStateOf("") }
+    var isCheckedTimeAlarm by remember { mutableStateOf(false) }
+    var timeAlarmType by remember { mutableStateOf(TypeTimeRepeating.NONE) }
 
     LaunchedEffect(Unit) {
         // 할 일 정보 조회
         viewModel.onEvent(ModifyTodoScreenEvents.LoadTodoData(todoId))
-        strTodoTitle.value = viewModel.state.todoData.title
+        strTodoTitle = viewModel.state.todoData.title
     }
 
     LaunchedEffect(viewModel.state.isFinished) {
@@ -77,7 +79,7 @@ fun ModifyTodoScreen(
                             modifier = Modifier.fillMaxWidth(),
                             strTitle = strTodoTitle,
                         ) { title ->
-                            strTodoTitle.value = title
+                            strTodoTitle = title
                         }
                     }
                     item {
@@ -85,13 +87,13 @@ fun ModifyTodoScreen(
                         TimeAlarmContainer(
                             modifier = Modifier.fillMaxWidth(),
                             colorIndex = groupColorIndex,
-                            type = timeAlarmType.value,
-                            isChecked = timeAlarm.value,
+                            type = timeAlarmType,
+                            isChecked = isCheckedTimeAlarm,
                             onCheckedChangedEvent = { checked ->
-                                timeAlarm.value = checked
+                                isCheckedTimeAlarm = checked
                             },
                             onTypeClickEvent = { type ->
-                                timeAlarmType.value = type
+                                timeAlarmType = type
                             }
                         )
                     }
@@ -110,7 +112,7 @@ fun ModifyTodoScreen(
                         ModifyTodoScreenEvents.ModifyTodo(
                             todoId = todoId,
                             groupId = viewModel.state.todoData.groupId,
-                            title = strTodoTitle.value,
+                            title = strTodoTitle,
                             order = viewModel.state.todoData.order,
                             isCompleted = viewModel.state.todoData.isCompleted,
                         )

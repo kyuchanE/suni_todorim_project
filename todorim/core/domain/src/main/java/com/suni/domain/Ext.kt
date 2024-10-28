@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import com.suni.ui.R
 import java.text.SimpleDateFormat
 import java.util.Calendar

@@ -16,9 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  *  시간 선택
+ *  @param onBottomButtonClickEvent 선택 완료 후 이벤트
  */
 @Composable
 fun TdrTimePickerContainer(
@@ -37,7 +41,7 @@ fun TdrTimePickerContainer(
     ) {
         // 시간 선택
         Row(
-            modifier = modifier,
+            modifier = Modifier.fillMaxWidth(),
         ) {
             // AM/PM
             TdrTimePicker(
@@ -64,17 +68,66 @@ fun TdrTimePickerContainer(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
                 onBottomButtonClickEvent(
-                    hourPickerState.selectedItem +
-                            ":" +
-                            minutePickerState.selectedItem
+                    timePickerValue(
+                        typePickerState.selectedItem,
+                        hourPickerState.selectedItem,
+                        minutePickerState.selectedItem,
+                    )
                 )
             },
         ) {
             Text(text = "확인")
         }
     }
+}
 
+enum class SelectOnePickerType(val valueList: List<String>) {
+    DAY_OF_WEEK(
+        listOf("일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일")
+    ),
+    DAY(
+        (1..31).map { it.toString()+"일" }
+    )
+}
 
+/**
+ *  요일/일 선택
+ *  @param type SelectOnePickerType - 요일 또는 일
+ */
+@Composable
+fun TdrSelectOnePickerContainer(
+    modifier: Modifier,
+    type: SelectOnePickerType,
+    onBottomButtonClickEvent: (selectedValue: Int) -> Unit = {_ ->},
+) {
+    val pickerState = rememberPickerState()
+
+    Column(
+        modifier = modifier.height(155.dp),
+    ) {
+        // 단일 값 선택
+        TdrPicker(
+            modifier = Modifier.fillMaxWidth(),
+            items = type.valueList,
+            state = pickerState,
+        )
+        Spacer(modifier = Modifier.height(55.dp))
+        // 확인 버튼
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                try {
+                    onBottomButtonClickEvent(
+                        type.valueList.indexOf(pickerState.selectedItem) + 1
+                    )
+                } catch (e: Exception) {
+
+                }
+            },
+        ) {
+            Text(text = "확인")
+        }
+    }
 }
 
 /**
@@ -85,7 +138,7 @@ fun TdrTimePickerContainer(
 fun TdrDatePicker(
     modifier: Modifier,
     yearNow: Int,
-    onDateSelected: (Long?) -> Unit,
+    onDateSelected: (date:Date) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val datePickerState = rememberDatePickerState(yearRange = IntRange(yearNow, yearNow + 1))
@@ -95,7 +148,9 @@ fun TdrDatePicker(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
+                datePickerState.selectedDateMillis?.let {
+                    onDateSelected(convertMillisToDate(it))
+                }
                 onDismiss()
             }) {
                 Text("OK")
@@ -110,3 +165,22 @@ fun TdrDatePicker(
         DatePicker(state = datePickerState)
     }
 }
+
+/**
+ * 시간 피커 선택 값
+ */
+private fun timePickerValue(
+    type: String,
+    hour: String,
+    minute: String,
+): String {
+    // TODO chan 00시와 12시 구분 필요
+    return if (type == "오후") {
+        "${hour.toInt() + 12}:$minute"
+    } else {
+        "$hour:$minute"
+    }
+}
+
+
+fun convertMillisToDate(millis: Long): Date = Date(millis)

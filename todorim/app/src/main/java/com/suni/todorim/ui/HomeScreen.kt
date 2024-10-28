@@ -49,8 +49,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.suni.data.model.GroupEntity
@@ -238,7 +240,8 @@ private fun HomeScreenTitle(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = getStrHomeDate())
         IconButton(onClick = settingOnClickEvent) {
@@ -440,6 +443,27 @@ private fun ModalBottomContainer(
         item {
             Text(text = stringResource(id = R.string.str_setting))
             Spacer(modifier = Modifier.height(65.dp))
+        }
+    }
+}
+
+/**
+ * 홈 스크린 프리 뷰
+ */
+@Preview
+@Composable
+internal fun PreviewHomeScreen() {
+
+    Scaffold { pv ->
+        Box(
+            modifier = Modifier
+                .padding(pv)
+                .background(
+                    brush = bgGradient(bgIndex = 2),
+                    shape = RectangleShape
+                ),
+        ) {
+
         }
     }
 }

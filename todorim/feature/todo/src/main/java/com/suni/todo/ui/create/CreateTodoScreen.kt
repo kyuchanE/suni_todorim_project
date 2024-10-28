@@ -12,8 +12,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,9 +42,11 @@ fun CreateTodoScreen(
     val isFinished = viewModel.state.isFinished
     val currentFocus = LocalFocusManager.current
 
-    val strTodoTitle = remember { mutableStateOf("") }
-    val timeAlarm = remember { mutableStateOf(false) }
-    val timeAlarmType = remember { mutableStateOf(TypeTimeRepeating.NONE) }
+    var strTodoTitle by remember { mutableStateOf("") }
+    var isCheckedTimeAlarm by remember { mutableStateOf(false) }
+    var timeAlarmType by remember { mutableStateOf(TypeTimeRepeating.NONE) }
+    var alarmTypeOptionValue by remember { mutableStateOf("") }
+    var alarmTimeOptionValue by remember { mutableStateOf("") }
 
     LaunchedEffect(isFinished) {
         if (isFinished)
@@ -82,7 +86,7 @@ fun CreateTodoScreen(
                             modifier = Modifier.fillMaxWidth(),
                             strTitle = strTodoTitle,
                         ) { title ->
-                            strTodoTitle.value = title
+                            strTodoTitle = title
                         }
                     }
                     item {
@@ -90,13 +94,23 @@ fun CreateTodoScreen(
                         TimeAlarmContainer(
                             modifier = Modifier.fillMaxWidth(),
                             colorIndex = groupColorIndex,
-                            type = timeAlarmType.value,
-                            isChecked = timeAlarm.value,
+                            type = timeAlarmType,
+                            isChecked = isCheckedTimeAlarm,
+                            selectedTypeOption = alarmTypeOptionValue,
+                            selectedTimeOption = alarmTimeOptionValue,
                             onCheckedChangedEvent = { checked ->
-                                timeAlarm.value = checked
+                                isCheckedTimeAlarm = checked
                             },
                             onTypeClickEvent = { type ->
-                                timeAlarmType.value = type
+                                timeAlarmType = type
+                                alarmTypeOptionValue = ""
+                                alarmTimeOptionValue = ""
+                            },
+                            selectedTypeOptionEvent = { typeOption ->
+                                alarmTypeOptionValue = typeOption
+                            },
+                            selectedTimeOptionEvent = { timeOption ->
+                                alarmTimeOptionValue = timeOption
                             }
                         )
                     }
@@ -116,7 +130,7 @@ fun CreateTodoScreen(
                             todoEntity = TodoEntity().apply {
                                 this.todoId = todoMaxId
                                 this.groupId = groupId
-                                this.title = strTodoTitle.value
+                                this.title = strTodoTitle
                             },
                         )
                     )
