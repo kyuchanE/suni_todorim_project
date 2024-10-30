@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -21,14 +22,14 @@ enum class TimeAlarmType(val strName: String) {
     MONTH("TIME_ALARM_MONTH"),      // 매월
 }
 
-class AlarmReceiver @Inject constructor(
-    private val scheduleAlarmManager: AlarmManager,
-) : BroadcastReceiver() {
+//class AlarmReceiver @Inject constructor(
+//    private val scheduleAlarmManager: AlarmManager,
+//) : BroadcastReceiver() {
+
+class AlarmReceiver : BroadcastReceiver() {
 
     companion object {
         const val NOTIFICATION_ID = 1113
-        const val CHANNEL_ID = "TODORIM_ALARM"
-
         const val TYPE_TIME = "TYPE_TIME"
 
         const val KEY_ALARM_TYPE = "KEY_ALARM_TYPE"
@@ -39,8 +40,11 @@ class AlarmReceiver @Inject constructor(
     override fun onReceive(context: Context?, intent: Intent?) {
         // TODO chan 메인 이동 또는 해당 알림 설정으로 이동 해야함 - 어떻게 해당 엑티비티 값을 가져올까?
 //        val routeIntent = Intent(context, MainActivity::class.java)
+        Log.d("@@@@@@", "AlarmReceiver onReceive >> ")
 
         context?.let {
+            val scheduleAlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
             if (
                 ActivityCompat.checkSelfPermission(
                     it,
@@ -52,7 +56,7 @@ class AlarmReceiver @Inject constructor(
                 val timeAlarmType = intent?.getStringExtra(KEY_TIME_ALARM_TYPE) ?: ""
 
 
-                val builder = NotificationCompat.Builder(it, CHANNEL_ID)
+                val builder = NotificationCompat.Builder(it, it.getString(R.string.notification_channel_id))
                     .setSmallIcon(R.mipmap.ic_todorim_launcher)
                     .setContentTitle(title)
                     .setContentText("")
@@ -73,7 +77,7 @@ class AlarmReceiver @Inject constructor(
                                             it,
                                             0,
                                             Intent(it, AlarmReceiver::class.java),
-                                            PendingIntent.FLAG_UPDATE_CURRENT
+                                            PendingIntent.FLAG_IMMUTABLE
                                         )
                                     )
                                 }
@@ -82,21 +86,21 @@ class AlarmReceiver @Inject constructor(
                                     // 매일 알림
                                     // 다음날 알람 설정
                                     targetCalendar.add(Calendar.DAY_OF_MONTH, 1)
-                                    setNextAlarm(targetCalendar, it)
+                                    setNextAlarm(scheduleAlarmManager, targetCalendar, it)
                                 }
 
                                 TimeAlarmType.WEEK.strName -> {
                                     // 매주 알림
                                     // 다음주 알람 설정
                                     targetCalendar.add(Calendar.DAY_OF_MONTH, 7)
-                                    setNextAlarm(targetCalendar, it)
+                                    setNextAlarm(scheduleAlarmManager, targetCalendar, it)
                                 }
 
                                 TimeAlarmType.MONTH.strName -> {
                                     // 매월 알림
                                     // 다음달 알람 설정
                                     targetCalendar.add(Calendar.MONTH, 1)
-                                    setNextAlarm(targetCalendar, it)
+                                    setNextAlarm(scheduleAlarmManager, targetCalendar, it)
                                 }
                             }
                         }
@@ -111,7 +115,7 @@ class AlarmReceiver @Inject constructor(
      * @param targetCalendar 다음 알람 시간
      * @param context
      */
-    private fun setNextAlarm(targetCalendar: Calendar, context: Context) {
+    private fun setNextAlarm(scheduleAlarmManager: AlarmManager, targetCalendar: Calendar, context: Context) {
         // 다음 알람 설정
         scheduleAlarmManager.setExact(
             AlarmManager.RTC_WAKEUP,

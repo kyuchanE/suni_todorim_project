@@ -29,6 +29,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.suni.domain.getTimeNow
+import com.suni.domain.toCommonTypeString
 import com.suni.domain.toDate
 import com.suni.domain.toFullString
 import com.suni.ui.R
@@ -114,7 +115,10 @@ fun TimeAlarmContainer(
             RepeatingOptionContainer(
                 modifier = Modifier.fillMaxWidth(),
                 selectedType = type,
-                selectedOptionValue = selectedTypeOption,
+                selectedOptionValue =
+                if(type == TypeTimeRepeating.NONE) {
+                    selectedTypeOption.toDate("yyyy-MM-dd")?.toFullString() ?: ""
+                } else { selectedTypeOption },
             ) {
                 when(type) {
                     TypeTimeRepeating.NONE -> {
@@ -148,7 +152,7 @@ fun TimeAlarmContainer(
                     yearNow = 2024,
                     onDateSelected = { date ->
                         showDatePicker = false
-                        selectedTypeOptionEvent(date.toFullString() ?: "")
+                        selectedTypeOptionEvent(date.toCommonTypeString() ?: "")
                     },
                     onDismiss = {
                         showDatePicker = false

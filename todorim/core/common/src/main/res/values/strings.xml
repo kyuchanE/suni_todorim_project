@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_channel_id">TODORIM_ALARM_CHANNEL_ID</string>
+    <string name="notification_channel_name">TODORIM_ALARM</string>
+    <string name="notification_channel_description">TODORIM_ALARM</string>
+</resources>

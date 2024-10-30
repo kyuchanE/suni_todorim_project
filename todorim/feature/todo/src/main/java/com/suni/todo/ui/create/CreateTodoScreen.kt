@@ -115,7 +115,7 @@ fun CreateTodoScreen(
                         )
                     }
                 }
-                // 하단 버튼
+                // 하단 버튼 - 할 일 생성
                 GradientButton(
                     text = stringResource(id = R.string.str_add),
                     textColor = Color.White,
@@ -131,6 +131,25 @@ fun CreateTodoScreen(
                                 this.todoId = todoMaxId
                                 this.groupId = groupId
                                 this.title = strTodoTitle
+                                this.isDateNoti = isCheckedTimeAlarm
+                                this.notiTime = alarmTimeOptionValue
+                                when(timeAlarmType) {
+                                    TypeTimeRepeating.NONE -> {
+                                        // 반복 안함 (특정 날짜)
+                                        this.date = alarmTypeOptionValue
+                                    }
+                                    TypeTimeRepeating.MONTH -> {
+                                        // 매월
+                                        this.day = alarmTypeOptionValue.toInt()
+                                    }
+                                    TypeTimeRepeating.WEEK -> {
+                                        // 매주
+                                        this.week = alarmTypeOptionValue.toInt()
+                                    }
+                                    TypeTimeRepeating.DAY -> {
+                                        // 매일
+                                    }
+                                }
                             },
                         )
                     )

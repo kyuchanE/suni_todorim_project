@@ -42,6 +42,7 @@ class ModifyTodoScreenViewModel @Inject constructor(
      * @param events
      */
     private fun updateTodo(events: ModifyTodoScreenEvents.ModifyTodo) {
+        // TODO chan isCompleted 된다면 예정된 알림 취소 해야함 (메인과 상세에서의 할 일 완료 처리 부분)
         viewModelScope.launch {
             updateTodoDataUseCase(
                 TodoEntity().apply {

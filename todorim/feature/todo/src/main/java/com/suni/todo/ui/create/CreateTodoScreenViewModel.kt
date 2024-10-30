@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.suni.common.receiver.AlarmReceiver
 import com.suni.common.receiver.TimeAlarmType
 import com.suni.data.model.TodoEntity
+import com.suni.domain.L
 import com.suni.domain.usecase.WriteTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -58,15 +59,16 @@ class CreateTodoScreenViewModel @Inject constructor(
                             putExtra("TEST", this@with.title)
                         }
                         val pendingIntent =
-                            PendingIntent.getService(
+                            PendingIntent.getBroadcast(
                                 context,
                                 this.todoId,
                                 intent,
-                                PendingIntent.FLAG_UPDATE_CURRENT,
+                                PendingIntent.FLAG_IMMUTABLE,
                             )
-                        if (pendingIntent != null) {
-                            aManager.cancel(pendingIntent)
-                        }
+
+//                        if (pendingIntent != null) {
+//                            aManager.cancel(pendingIntent)
+//                        }
 
                         // 알림 시간 설정
                         aManager.setExact(
@@ -97,7 +99,7 @@ class CreateTodoScreenViewModel @Inject constructor(
                 val time = todoEntity.notiTime.split(":")
                 returnCalendar.set(
                     date[0].toInt(),
-                    date[1].toInt(),
+                    date[1].toInt() - 1,
                     date[2].toInt(),
                     time[0].toInt(),
                     time[1].toInt(),
@@ -185,7 +187,7 @@ class CreateTodoScreenViewModel @Inject constructor(
                 )
             }
         }
-
+        L.d("alarmCalendar ${returnCalendar.get(Calendar.YEAR)} : ${returnCalendar.get(Calendar.MONTH) + 1} : ${returnCalendar.get(Calendar.DAY_OF_MONTH)} , ${returnCalendar.get(Calendar.HOUR_OF_DAY)} : ${returnCalendar.get(Calendar.MINUTE)}")
         return returnCalendar
     }
 

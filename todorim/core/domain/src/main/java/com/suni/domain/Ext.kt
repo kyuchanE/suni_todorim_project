@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
+import androidx.core.app.ActivityCompat
 import com.suni.ui.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -60,12 +62,12 @@ fun String.getTimeNow(): String {
 }
 
 /**
- * SimpleDateFormat "yyyyMMdd"
+ * SimpleDateFormat Default : "yyyyMMdd"
  * @return Date
  */
-fun String.toDate(): Date? {
+fun String.toDate(pattern: String = "yyyyMMdd"): Date? {
     return try {
-        SimpleDateFormat("yyyyMMdd").parse(this)
+        SimpleDateFormat(pattern).parse(this)
     } catch (e: Exception) {
         null
     }
@@ -130,6 +132,22 @@ fun Date.toFullString(): String? {
                 "${calendar.get(Calendar.MONTH) + 1}월 " +
                 "${calendar.get(Calendar.DAY_OF_MONTH)} " +
                 "(${calendar.get(Calendar.DAY_OF_WEEK).getDayOfWeek()})"
+    } catch (e: Exception) {
+        null
+    }
+}
+
+/**
+ * return to String (yyyy-MM-dd)
+ */
+fun Date.toCommonTypeString(): String? {
+    return try {
+        val calendar = Calendar.getInstance()
+        calendar.time = this
+
+        "${calendar.get(Calendar.YEAR)}-" +
+                "${calendar.get(Calendar.MONTH) + 1}-" +
+                "${calendar.get(Calendar.DAY_OF_MONTH)}"
     } catch (e: Exception) {
         null
     }
