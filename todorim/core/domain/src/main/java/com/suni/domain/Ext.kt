@@ -79,7 +79,7 @@ fun String.toDate(pattern: String = "yyyyMMdd"): Date? {
 fun getStrHomeDate(): String {
     return try {
         val now = "MM/dd".getTimeNow().split("/")
-        return "${now[0]}월 ${now[1]}일"
+        return "${now[0]}월 ${now[1].toInt()}일"
     } catch (e: Exception) {
         L.e(e.message)
         ""

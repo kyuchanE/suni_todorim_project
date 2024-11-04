@@ -8,12 +8,16 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.suni.common.base.BaseActivity
@@ -44,8 +48,18 @@ class MainActivity : BaseActivity() {
     lateinit var groupNavigator: GroupNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        enableEdgeToEdge(
+//            statusBarStyle = SystemBarStyle.light(
+//                Color.Transparent.toArgb(), Color.Transparent.toArgb()
+//            ),
+//            navigationBarStyle = SystemBarStyle.light(
+//                Color.Transparent.toArgb(), Color.Transparent.toArgb()
+//            )
+//        )
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         createNotificationChannel()
         // Notification 권한 체크
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -55,7 +69,7 @@ class MainActivity : BaseActivity() {
             SuniTodorimTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.safeDrawingPadding().fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val viewModel = hiltViewModel<HomeScreenViewModel>()

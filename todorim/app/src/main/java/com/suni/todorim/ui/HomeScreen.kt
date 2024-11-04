@@ -17,17 +17,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,13 +55,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
@@ -63,6 +75,8 @@ import com.suni.domain.getDayOfWeek
 import com.suni.domain.getStrHomeDate
 import com.suni.navigator.GroupScreenFlag
 import com.suni.todorim.R
+import com.suni.todorim.component.CreateGroupCard
+import com.suni.todorim.component.GroupDetailCard
 import com.suni.ui.component.LinearGradientProgressIndicator
 import com.suni.ui.component.TdrOnlyCheckBox
 import com.suni.ui.component.bgGradient
@@ -77,7 +91,6 @@ enum class RefreshHomeFlag {
 /**
  * 메인 홈 화면
  * @param viewModel
- * @param todoNavigatorAction
  * @param groupNavigatorAction
  */
 @Composable
@@ -95,10 +108,13 @@ fun HomeScreen(
         viewModel.onEvent(HomeScreenEvents.LoadLocalData)
     }
 
-    Scaffold { pv ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+    ) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(pv)
+                .consumeWindowInsets(innerPadding)
+//                .padding(innerPadding)
                 .background(
                     brush = bgGradient(bgIndex = viewModel.state.backgroundIndex),
                     shape = RectangleShape
@@ -115,10 +131,9 @@ fun HomeScreen(
 /**
  * 페이지 리스트
  * @param vm
- * @param todoNavigatorAction
  * @param groupNavigatorAction
  */
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeBody(
     vm: HomeScreenViewModel,
@@ -167,12 +182,25 @@ private fun HomeBody(
         HomeScreenTitle(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                .padding(start = 35.dp, end = 20.dp),
         ) {
             showBottomSheet = true
         }
         // 요일
-        Text(text = getDayOfWeek())
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 35.dp, end = 20.dp),
+            text = getDayOfWeek(),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+        )
+        Spacer(
+            modifier = Modifier
+                .height(20.dp)
+                .fillMaxHeight()
+        )
         // 할일 목록
         HorizontalPager(
             state = pageState,
@@ -243,9 +271,18 @@ private fun HomeScreenTitle(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = getStrHomeDate())
+        Text(
+            text = getStrHomeDate(),
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+        )
         IconButton(onClick = settingOnClickEvent) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = null)
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = "setting",
+                tint = Color.White,
+            )
         }
     }
 }
@@ -272,7 +309,6 @@ private fun GroupContainer(
     ) -> Unit = { _, _, _, _, _ -> },
     refreshNewPage: (flag: RefreshHomeFlag) -> Unit = {}
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val refreshFlag = remember {
         mutableStateOf(RefreshHomeFlag.NONE)
@@ -304,22 +340,23 @@ private fun GroupContainer(
         }
     }
 
-    Surface(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
-        color = Color.White
+            .fillMaxHeight()
+            .padding(bottom = 35.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(Color.White),
+        elevation = CardDefaults.elevatedCardElevation(10.dp),
     ) {
         if (groupIndex == 0) {
             // 새로운 그룹 생성 페이지
-            Column(
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    Toast.makeText(context.findActivity(), "Create Group", Toast.LENGTH_SHORT)
-                        .show()
-
+            CreateGroupCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(25.dp),
+                onClick = {
                     groupNavigatorAction(
                         GroupScreenFlag.CREATE.name,
                         groupIndex,
@@ -328,72 +365,35 @@ private fun GroupContainer(
                         createGroupLauncher,
                     )
                 }
-            ) {
-                Text(text = "페이지 생성하기!!!")
-            }
+            )
         } else {
             // 그룹 페이지
-            Column(
+            GroupDetailCard(
                 modifier = Modifier
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        groupNavigatorAction(
-                            GroupScreenFlag.DETAIL.name,
-                            groupIndex,
-                            maxGroupId,
-                            maxOrderId,
-                            detailGroupLauncher,
-                        )
-                    }
-            ) {
-                // Group Title
-                Text(text = item.title)
-                // 할 일 진행률
-                LinearGradientProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                    backgroundColor = Color.LightGray,
-                    colorIndex = item.appColorIndex,
-                    percent = vm.getTodoCompletedPercent(item.groupId)
-                )
-                // 할 일 목록
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    userScrollEnabled = false,
-                ) {
-                    val todoItem = vm.state.todoLists
-                        .filter { it.groupId == item.groupId }
-                        .filter { !it.isCompleted }
-                        .toMutableList()
-                    todoItem.sortBy { it.todoId }
-                    itemsIndexed(
-                        items = todoItem,
-                        key = { index, todoEntity ->
-                            todoEntity.todoId
-                        },
-                    ) { _, todoEntity ->
-                        TdrOnlyCheckBox(
-                            modifier = Modifier.fillMaxWidth(),
-                            todoTitle = todoEntity.title,
-                            isSelected = todoEntity.isCompleted,
-                        ) { isSelected ->
-                            val resultItem = TodoEntity().apply {
-                                this.todoId = todoEntity.todoId
-                                this.groupId = todoEntity.groupId
-                                this.isCompleted = isSelected
-                                this.title = todoEntity.title
-                                this.order = todoEntity.order
-                            }
-                            vm.onEvent(HomeScreenEvents.UpdateTodoData(resultItem))
-                        }
-                    }
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(25.dp),
+                title = item.title,
+                colorIndex = item.appColorIndex,
+                todoCompletedPercent = vm.getTodoCompletedPercent(item.groupId),
+                todoItemList = vm.state.todoLists
+                    .filter { it.groupId == item.groupId }
+                    .filter { !it.isCompleted }
+                    .toMutableList(),
+                onClickDetailCard = {
+                    groupNavigatorAction(
+                        GroupScreenFlag.DETAIL.name,
+                        groupIndex,
+                        maxGroupId,
+                        maxOrderId,
+                        detailGroupLauncher,
+                    )
+                },
+                onClickCheckBox = { resultItem ->
+                    vm.onEvent(HomeScreenEvents.UpdateTodoData(resultItem))
                 }
-            }
+            )
         }
-
     }
 
 }
