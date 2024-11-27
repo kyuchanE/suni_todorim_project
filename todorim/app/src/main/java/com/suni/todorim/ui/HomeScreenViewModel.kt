@@ -1,5 +1,6 @@
 package com.suni.todorim.ui
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +14,7 @@ import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
 import com.suni.domain.usecase.WriteGroupDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject

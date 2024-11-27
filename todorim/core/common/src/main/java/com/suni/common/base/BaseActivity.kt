@@ -2,7 +2,21 @@ package com.suni.common.base
 
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.Insets
+import androidx.core.graphics.toColorInt
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import kotlinx.coroutines.coroutineScope
 
 /**
@@ -11,6 +25,70 @@ import kotlinx.coroutines.coroutineScope
  */
 abstract class BaseActivity: ComponentActivity() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        window.fitSystemWindowsWithAdjustResize()
+//        window.setStatusBarAndNavigationBarColor()
+
+    }
+}
+
+/**
+ * 상단 상태바 / 하단 네비게이션 바 투명
+ */
+fun Window.fitSystemWindowsWithAdjustResize() {
+    setFlags(
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+    )
+
+    WindowCompat.setDecorFitsSystemWindows(this, true)
+
+    ViewCompat.setOnApplyWindowInsetsListener(decorView) { view, insets ->
+        val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+
+        WindowInsetsCompat
+            .Builder()
+            .setInsets(
+                WindowInsetsCompat.Type.systemBars(),
+                Insets.of(0, 0, 0, bottom)
+            )
+            .build()
+            .apply { ViewCompat.onApplyWindowInsets(view, this) }
+    }
+
+    this.statusBarColor = Color.Black.toArgb()
+    this.navigationBarColor = Color.Black.toArgb()
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        this.insetsController?.setSystemBarsAppearance(
+            0,
+            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+        )
+    } else {
+        WindowInsetsControllerCompat(this, this.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
+    }
+}
+
+fun Activity.hideSystemUI() {
+
+    //Hides the ugly action bar at the top
+    actionBar?.hide()
+
+    //Hide the status bars
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    } else {
+        window.insetsController?.apply {
+            hide(WindowInsets.Type.statusBars())
+            systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
 }
 
 /**
@@ -65,4 +143,22 @@ suspend fun Activity.forcedCheckPermission(
         }
     }
 
+}
+
+fun Window.setStatusBarAndNavigationBarColor() {
+    WindowCompat.setDecorFitsSystemWindows(this, false)
+    this.statusBarColor = Color.White.toArgb()
+    this.navigationBarColor = Color.Black.toArgb()
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//        this.insetsController?.setSystemBarsAppearance(
+//            0,
+//            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+//        )
+    } else {
+        WindowInsetsControllerCompat(this, this.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
+    }
 }

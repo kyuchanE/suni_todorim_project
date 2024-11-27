@@ -11,14 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.suni.data.model.TodoEntity
-import com.suni.todorim.ui.HomeScreenEvents
 import com.suni.ui.component.LinearGradientProgressIndicator
 import com.suni.ui.component.TdrOnlyCheckBox
 
@@ -53,7 +51,7 @@ fun GroupDetailCard(
             text = title,
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold,
-            style = TextStyle(color = Color.Black),
+            color = colorResource(com.suni.ui.R.color.tdr_default),
             overflow = TextOverflow.Ellipsis,
             maxLines = 2,
         )
@@ -67,6 +65,7 @@ fun GroupDetailCard(
             colorIndex = colorIndex,
             percent = todoCompletedPercent,
         )
+        Spacer(modifier = Modifier.height(25.dp))
         // 할 일 목록
         LazyColumn(
             modifier = Modifier

@@ -1,5 +1,6 @@
 package com.suni.ui.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,13 +49,12 @@ fun LinearGradientProgressIndicator(
         ) {
             Box(
                 modifier = boxModifier
+                    .animateContentSize()
                     .width(maxWidth * percent / 100)
                     .height(30.dp)
                     .background(bgGradient(bgIndex = colorIndex, isVertical = false))
             )
         }
-//        Spacer(modifier = Modifier.width(20.dp))
-        //
         Text(
             modifier = Modifier.weight(0.2f),
             textAlign = TextAlign.Center,

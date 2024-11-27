@@ -11,7 +11,5 @@ import dagger.hilt.android.HiltAndroidApp
 class TdrApplication: Application() {
     override fun onCreate() {
         super.onCreate()
-
-
     }
 }

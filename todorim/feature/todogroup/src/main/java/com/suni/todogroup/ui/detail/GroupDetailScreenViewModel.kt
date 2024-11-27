@@ -1,5 +1,6 @@
 package com.suni.todogroup.ui.detail
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,6 +12,7 @@ import com.suni.domain.usecase.GetGroupDataUseCase
 import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -84,18 +86,14 @@ class GroupDetailScreenViewModel @Inject constructor(
             }
             // fetch Group TodoList
             var todoMaxId = -1
-            val resultTodoItems = getTodoDataUseCase.getTodoByGroupId(event.groupId)
-            val resultList = mutableListOf<TodoEntity>()
-            if (resultTodoItems.isNotEmpty()) {
-                resultTodoItems.forEach {
-                    resultList.add(it)
-                    if (it.todoId > todoMaxId)
-                        todoMaxId = it.todoId
+            getTodoDataUseCase.getTodoAll().forEach {
+                if (it.todoId > todoMaxId) {
+                    todoMaxId = it.todoId
                 }
-                resultList.sortBy { it.todoId }
             }
+
             state = state.copy(
-                todoDataList = resultList,
+                todoDataList = getTodoDataUseCase.getTodoByGroupId(event.groupId).toMutableList(),
                 todoMaxId = todoMaxId + 1,
                 isNeedRefreshHome =
                 if (event.isNeedRefresh) {

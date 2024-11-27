@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -43,8 +46,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
 import com.suni.domain.findActivity
@@ -127,16 +132,21 @@ fun GroupDetailScreen(
                     refreshHomeScreenAction = refreshHomeScreenAction,
                     moveGroupModifyScreenAction = moveGroupModifyScreenAction,
                 )
+                Spacer(modifier = Modifier.height(10.dp))
                 // 할 일 진행률
                 LinearGradientProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(10.dp)
+                        .padding(horizontal = 8.dp),
                     backgroundColor = Color.LightGray,
                     colorIndex = viewModel.state.groupData.appColorIndex,
                     percent = viewModel.getTodoCompletedPercent()
                 )
+                Spacer(modifier = Modifier.height(15.dp))
                 // 할 일 목록
                 TodoDataList(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
                     viewModel = viewModel,
                     groupTodoList = groupTodoList,
                     moveTodoModifyScreenAction = { todoId ->
@@ -187,14 +197,18 @@ private fun GroupDetailTitle(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // 할 일 Title
+        // 그룹 Title
         Text(
             modifier = Modifier.weight(1f),
             text = groupData.title,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.DarkGray,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        // 할 일 수정
+        Spacer(modifier = Modifier.width(4.dp))
+        // 그룹 수정
         IconButton(
             modifier = Modifier.size(45.dp),
             onClick = moveGroupModifyScreenAction,
@@ -271,7 +285,6 @@ private fun TodoDataList(
  * 할 일 (스와이프 좌 우)
  */
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun TodoItemComponent(
     modifier: Modifier,
     todoData: TodoEntity,

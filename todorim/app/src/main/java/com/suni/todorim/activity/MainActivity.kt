@@ -18,11 +18,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.suni.common.base.BaseActivity
 import com.suni.common.base.checkPermission
+import com.suni.common.base.fitSystemWindowsWithAdjustResize
 import com.suni.common.base.forcedCheckPermission
+import com.suni.common.base.hideSystemUI
+import com.suni.common.base.setStatusBarAndNavigationBarColor
 import com.suni.navigator.KEY_GROUP_FLAG
 import com.suni.navigator.GroupNavigator
 import com.suni.navigator.KEY_GROUP_ID
@@ -48,17 +52,7 @@ class MainActivity : BaseActivity() {
     lateinit var groupNavigator: GroupNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        enableEdgeToEdge(
-//            statusBarStyle = SystemBarStyle.light(
-//                Color.Transparent.toArgb(), Color.Transparent.toArgb()
-//            ),
-//            navigationBarStyle = SystemBarStyle.light(
-//                Color.Transparent.toArgb(), Color.Transparent.toArgb()
-//            )
-//        )
-
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         createNotificationChannel()
         // Notification 권한 체크
@@ -94,6 +88,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+    }
 
 }
 
@@ -117,3 +115,4 @@ private fun Activity.createNotificationChannel() {
         notificationManager.createNotificationChannel(channel)
     }
 }
+

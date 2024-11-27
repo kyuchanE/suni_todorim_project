@@ -27,6 +27,10 @@ object RealmModule {
     @Provides
     @Singleton
     fun providerRealmConfiguration(): RealmConfiguration =
-        RealmConfiguration.create(schema = setOf(GroupEntity::class, TodoEntity::class))
+        RealmConfiguration.Builder(schema = setOf(GroupEntity::class, TodoEntity::class))
+            .name("TDR_REALM")
+            .schemaVersion(0) // migration 을 위해 추가
+            .deleteRealmIfMigrationNeeded()
+            .build()
 
 }

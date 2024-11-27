@@ -23,12 +23,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.suni.data.model.TodoEntity
+import com.suni.domain.toCommonTypeString
 import com.suni.todo.R
 import com.suni.todo.ui.component.InputTodoTitle
 import com.suni.todo.ui.component.TimeAlarmContainer
 import com.suni.todo.ui.component.TodoTitle
 import com.suni.todo.ui.component.TypeTimeRepeating
 import com.suni.ui.component.GradientButton
+import java.util.Calendar
 
 @Composable
 fun CreateTodoScreen(
@@ -136,7 +138,11 @@ fun CreateTodoScreen(
                                 when(timeAlarmType) {
                                     TypeTimeRepeating.NONE -> {
                                         // 반복 안함 (특정 날짜)
-                                        this.date = alarmTypeOptionValue
+                                        this.date = if(alarmTypeOptionValue.isEmpty()) {
+                                            Calendar.getInstance().time.toCommonTypeString() ?: ""
+                                        } else {
+                                            alarmTypeOptionValue
+                                        }
                                     }
                                     TypeTimeRepeating.MONTH -> {
                                         // 매월
@@ -148,6 +154,7 @@ fun CreateTodoScreen(
                                     }
                                     TypeTimeRepeating.DAY -> {
                                         // 매일
+                                        this.everyDay = true
                                     }
                                 }
                             },

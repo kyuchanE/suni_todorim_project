@@ -4,6 +4,7 @@ import com.suni.data.model.TodoEntity
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
+import io.realm.kotlin.query.Sort
 import javax.inject.Inject
 
 /**
@@ -18,7 +19,7 @@ class GetTodoDataUseCase @Inject constructor(
         realm.query<TodoEntity>().find()
 
     fun getTodoByGroupId(groupId: Int): RealmResults<TodoEntity> =
-        realm.query<TodoEntity>("groupId = $0", groupId).find()
+        realm.query<TodoEntity>("groupId = $0", groupId).sort("todoId", Sort.ASCENDING).find()
 
     fun getTodoByTodoId(todoId: Int): RealmResults<TodoEntity> =
         realm.query<TodoEntity>("todoId = $0", todoId).find()

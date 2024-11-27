@@ -2,4 +2,5 @@
     <string name="app_name">suni_todorim</string>
 
     <string name="str_setting">설정</string>
+    <string name="str_create_group">그룹 추가</string>
 </resources>

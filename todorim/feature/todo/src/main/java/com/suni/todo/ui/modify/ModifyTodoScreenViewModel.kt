@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
-import com.suni.domain.usecase.WriteTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

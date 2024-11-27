@@ -90,7 +90,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 #Realm
 realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm" }
 realm-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "realm" }
-realm-android = { group = "io.realm", name = "realm-gradle-plugin", version.ref = "realm" }
+realm-gradle = { group = "io.realm", name = "realm-gradle-plugin", version.ref = "realm" }
 #Work  >> Targeting S+ (version 31 and above) require PendingIntent Issues
 work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 #Logger

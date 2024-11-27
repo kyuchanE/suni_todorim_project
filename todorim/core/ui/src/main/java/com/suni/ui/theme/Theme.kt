@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -13,7 +14,13 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import com.suni.ui.R
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -35,6 +42,60 @@ private val LightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
     */
+)
+
+private val notosansFont = FontFamily(
+    Font(R.font.noto_sans_thin, FontWeight.Thin),
+    Font(R.font.noto_sans_regular, FontWeight.Normal),
+    Font(R.font.noto_sans_medium, FontWeight.Medium),
+    Font(R.font.noto_sans_semibold, FontWeight.SemiBold),
+    Font(R.font.noto_sans_bold, FontWeight.Bold),
+    Font(R.font.noto_sans_extrabold, FontWeight.ExtraBold),
+)
+
+private val todorimTypography = Typography(
+    titleLarge = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        letterSpacing = 0.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        letterSpacing = 0.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        letterSpacing = 0.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Thin,
+        fontSize = 12.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        letterSpacing = 0.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        letterSpacing = 0.sp
+    ),
 )
 
 @Composable
@@ -64,7 +125,7 @@ fun SuniTodorimTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = todorimTypography,
         content = content
     )
 }

@@ -107,6 +107,7 @@ dependencies {
     // Realm
     implementation(libs.realm.base)
     implementation(libs.realm.sync)
+
 //    implementation(libs.realm.android)
     // Work Targeting S+ (version 31 and above) require PendingIntent Issues
     implementation(libs.work)

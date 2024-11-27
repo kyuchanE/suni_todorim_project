@@ -7,4 +7,7 @@
     <string name="time_repeating_every_day">매일</string>
     <string name="time_repeating_every_week">매주</string>
     <string name="time_repeating_every_month">매월</string>
+
+    <string name="str_create_group">그룹 추가</string>
+
 </resources>

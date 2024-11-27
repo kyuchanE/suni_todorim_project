@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -13,8 +14,10 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -59,16 +62,10 @@ fun TdrCheckBox(
                     onCheckedAction(checkBoxState.value)
                 }
         ) {
-            val boxModifier = Modifier.size(24.dp)
-            if (checkBoxState.value) {
-                CheckBoxSelected(
-                    modifier = boxModifier
-                )
-            } else {
-                CheckBoxUnSelected(
-                    modifier = boxModifier
-                )
-            }
+            Spacer(modifier = Modifier.width(2.dp))
+            CheckBox(
+                checkBoxState = checkBoxState
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = todoTitle,
@@ -77,6 +74,7 @@ fun TdrCheckBox(
                 else TextDecoration.None,
             )
         }
+        Spacer(modifier = Modifier.size(15.dp))
     }
 }
 
@@ -108,26 +106,13 @@ fun TdrOnlyCheckBox(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            val boxModifier = Modifier
-                .size(24.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    checkBoxState.value = !checkBoxState.value
-                    onCheckedAction(checkBoxState.value)
-                }
-
-            if (checkBoxState.value) {
-                CheckBoxSelected(
-                    modifier = boxModifier
-                )
-            } else {
-                CheckBoxUnSelected(
-                    modifier = boxModifier
-                )
-            }
+            Spacer(modifier = Modifier.width(2.dp))
+            CheckBox(
+                checkBoxState = checkBoxState,
+                onCheckedAction = onCheckedAction
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = todoTitle,
@@ -136,6 +121,49 @@ fun TdrOnlyCheckBox(
                 else TextDecoration.None,
             )
         }
+        Spacer(modifier = Modifier.size(15.dp))
+    }
+}
+
+@Composable
+private fun CheckBox(
+    checkBoxState: MutableState<Boolean>
+) {
+    val boxModifier = Modifier.size(25.dp)
+    if (checkBoxState.value) {
+        CheckBoxSelected(
+            modifier = boxModifier
+        )
+    } else {
+        CheckBoxUnSelected(
+            modifier = boxModifier
+        )
+    }
+}
+
+@Composable
+private fun CheckBox(
+    checkBoxState: MutableState<Boolean>,
+    onCheckedAction: (isSelected: Boolean) -> Unit = { _ -> },
+) {
+    val boxModifier = Modifier
+        .size(25.dp)
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null
+        ) {
+            checkBoxState.value = !checkBoxState.value
+            onCheckedAction(checkBoxState.value)
+        }
+
+    if (checkBoxState.value) {
+        CheckBoxSelected(
+            modifier = boxModifier
+        )
+    } else {
+        CheckBoxUnSelected(
+            modifier = boxModifier
+        )
     }
 }
 
@@ -145,6 +173,7 @@ private fun CheckBoxSelected(
 ) {
     Box(modifier = modifier) {
         Icon(
+            modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = R.drawable.ic_check_gray),
             tint = Color.LightGray,
             contentDescription = "Checked",
@@ -158,6 +187,7 @@ private fun CheckBoxUnSelected(
 ) {
     Box(modifier = modifier) {
         Icon(
+            modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = R.drawable.ic_uncheck_default),
             contentDescription = "UnChecked",
         )
