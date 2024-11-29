@@ -12,7 +12,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.Insets
-import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,8 +26,6 @@ abstract class BaseActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.fitSystemWindowsWithAdjustResize()
-//        window.setStatusBarAndNavigationBarColor()
 
     }
 }
@@ -71,6 +68,8 @@ fun Window.fitSystemWindowsWithAdjustResize() {
             isAppearanceLightNavigationBars = false
         }
     }
+
+
 }
 
 fun Activity.hideSystemUI() {
@@ -145,20 +144,43 @@ suspend fun Activity.forcedCheckPermission(
 
 }
 
-fun Window.setStatusBarAndNavigationBarColor() {
-    WindowCompat.setDecorFitsSystemWindows(this, false)
-    this.statusBarColor = Color.White.toArgb()
-    this.navigationBarColor = Color.Black.toArgb()
+fun Window.setMainStatusBarAndNavigationBarColor() {
+    // TODO chan 비교 및 각각의 기능 확인 필요
+    setFlags(
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+    )
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//        this.insetsController?.setSystemBarsAppearance(
-//            0,
-//            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-//        )
-    } else {
+    WindowCompat.setDecorFitsSystemWindows(this, true)
+
+    this.statusBarColor = Color.Transparent.toArgb()
+    this.navigationBarColor = Color.Transparent.toArgb()
+
+    this.decorView.post {
         WindowInsetsControllerCompat(this, this.decorView).apply {
             isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = false
         }
     }
+
+}
+
+fun Window.setSubStatusBarAndNavigationBarColor() {
+    setFlags(
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+    )
+
+    WindowCompat.setDecorFitsSystemWindows(this, true)
+
+    this.statusBarColor = Color.Transparent.toArgb()
+    this.navigationBarColor = Color.Transparent.toArgb()
+
+    this.decorView.post {
+        WindowInsetsControllerCompat(this, this.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+    }
+
 }

@@ -25,13 +25,15 @@ import com.suni.ui.R
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = TdrDefault
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    background = TdrDefault,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -43,6 +45,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
 
 private val notosansFont = FontFamily(
     Font(R.font.noto_sans_thin, FontWeight.Thin),
@@ -56,8 +59,8 @@ private val notosansFont = FontFamily(
 private val todorimTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = notosansFont,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 38.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
@@ -68,20 +71,20 @@ private val todorimTypography = Typography(
     ),
     titleSmall = TextStyle(
         fontFamily = notosansFont,
-        fontWeight = FontWeight.Medium,
-        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
         letterSpacing = 0.sp
     ),
     bodySmall = TextStyle(
         fontFamily = notosansFont,
-        fontWeight = FontWeight.Thin,
+        fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         letterSpacing = 0.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = notosansFont,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
+        fontSize = 15.sp,
         letterSpacing = 0.sp
     ),
     bodyLarge = TextStyle(
@@ -90,10 +93,22 @@ private val todorimTypography = Typography(
         fontSize = 20.sp,
         letterSpacing = 0.sp
     ),
+    labelSmall = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Thin,
+        fontSize = 12.sp,
+        letterSpacing = 0.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = notosansFont,
+        fontWeight = FontWeight.Thin,
+        fontSize = 18.sp,
+        letterSpacing = 0.sp
+    ),
     labelLarge = TextStyle(
         fontFamily = notosansFont,
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
+        fontWeight = FontWeight.Thin,
+        fontSize = 22.sp,
         letterSpacing = 0.sp
     ),
 )

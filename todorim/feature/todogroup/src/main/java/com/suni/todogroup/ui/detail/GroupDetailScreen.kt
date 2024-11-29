@@ -117,6 +117,7 @@ fun GroupDetailScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .padding(vertical = 45.dp)
                     .align(Alignment.TopStart)
                     .fillMaxWidth()
                     .fillMaxHeight()
@@ -160,7 +161,7 @@ fun GroupDetailScreen(
             }
             // 하단 할 일 생성 버튼
             GradientFloatingActionButton(
-                modifier = Modifier.align(Alignment.BottomEnd),
+                modifier = Modifier.align(Alignment.BottomEnd).padding(horizontal = 35.dp, vertical = 55.dp),
                 startColor = groupData.appColorIndex.getGradientStartColor(),
                 endColor = groupData.appColorIndex.getGradientEndColor(),
                 icon = Icons.Filled.Add,

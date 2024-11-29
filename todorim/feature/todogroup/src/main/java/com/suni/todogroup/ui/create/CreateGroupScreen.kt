@@ -3,8 +3,11 @@ package com.suni.todogroup.ui.create
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -15,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import com.suni.todogroup.ui.component.GroupBottomButton
 import com.suni.todogroup.ui.component.GroupTitle
 import com.suni.todogroup.ui.component.SelectGroupColor
@@ -36,7 +40,7 @@ fun CreateGroupScreen(
     val strGroupTitle = remember { mutableStateOf("") }
     val currentFocus = LocalFocusManager.current
 
-    Scaffold { pv ->
+    Scaffold{ pv ->
         Surface(
             modifier = Modifier
                 .padding(pv)
@@ -46,6 +50,7 @@ fun CreateGroupScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .padding(vertical = 45.dp)
                     .clickable(
                         interactionSource = remember{ MutableInteractionSource() },
                         indication = null
@@ -60,6 +65,7 @@ fun CreateGroupScreen(
                         .fillMaxWidth()
 
                 )
+                Spacer(modifier = Modifier.height(35.dp))
                 // 그룹 색상 선택
                 SelectGroupColor(
                     modifier = Modifier

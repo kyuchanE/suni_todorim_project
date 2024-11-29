@@ -9,5 +9,6 @@
     <string name="time_repeating_every_month">매월</string>
 
     <string name="str_create_group">그룹 추가</string>
+    <string name="str_hint_group_name">그룹 이름을 입력하세요.</string>
 
 </resources>

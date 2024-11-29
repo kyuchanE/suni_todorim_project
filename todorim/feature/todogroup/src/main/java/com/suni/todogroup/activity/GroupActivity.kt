@@ -12,6 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.suni.common.base.BaseActivity
+import com.suni.common.base.setSubStatusBarAndNavigationBarColor
 import com.suni.navigator.KEY_GROUP_FLAG
 import com.suni.navigator.GroupScreenFlag
 import com.suni.navigator.KEY_GROUP_COLOR_INDEX
@@ -38,14 +40,15 @@ import javax.inject.Inject
  * 24.09.11 Create class - Q
  */
 @AndroidEntryPoint
-class GroupActivity : ComponentActivity(){
+class GroupActivity : BaseActivity(){
 
     @Inject
     lateinit var todoNavigator: TodoNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        window.setSubStatusBarAndNavigationBarColor()
 
         val groupScreenFlag =
             intent.getStringExtra(KEY_GROUP_FLAG) ?: GroupScreenFlag.DETAIL.name

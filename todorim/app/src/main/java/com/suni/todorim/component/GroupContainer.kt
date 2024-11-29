@@ -114,7 +114,7 @@ fun GroupContainer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(25.dp),
+                    .padding(vertical = 25.dp, horizontal = 15.dp),
                 title = item.title,
                 colorIndex = item.appColorIndex,
                 todoCompletedPercent = vm.getTodoCompletedPercent(item.groupId),
