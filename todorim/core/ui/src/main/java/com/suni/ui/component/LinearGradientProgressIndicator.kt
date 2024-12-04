@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -56,11 +58,15 @@ fun LinearGradientProgressIndicator(
             )
         }
         Text(
-            modifier = Modifier.weight(0.2f),
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.2f)
+                .align(Alignment.CenterVertically),
             textAlign = TextAlign.Center,
             text = "${percent.toInt()} %",
-            style = TextStyle(color = Color.Gray),
-            fontSize = 10.sp,
+            color = Color.Gray,
+            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 9.sp,
             overflow = TextOverflow.Ellipsis,
         )
     }
