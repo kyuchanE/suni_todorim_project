@@ -1,16 +1,10 @@
 package com.suni.todogroup.ui.component
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -23,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.suni.ui.component.ColorPalette
 
@@ -132,6 +124,49 @@ private fun TextFieldDecoratorBox(
         ) {
             Box(
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .background(
+                        color = Color.Transparent,
+                        shape = RectangleShape,
+                    )
+                    .border(
+                        border = BorderStroke(
+                            1.5.dp,
+                            colorResource(
+                                id = com.suni.ui.R.color.tdr_default
+                            )
+                        ),
+                        shape = RectangleShape,
+                    ),
+            )
+
+            // TextField Border Animation
+            androidx.compose.animation.AnimatedVisibility(
+                visible = !isVisibleBorder,
+                enter =
+                slideInHorizontally(animationSpec = tween(durationMillis = 500)) { fullWidth ->
+                    -fullWidth
+                },
+                exit =
+                slideOutHorizontally(animationSpec = tween(durationMillis = 500)) { fullWidth ->
+                    -fullWidth
+                }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.5.dp)
+                        .background(
+                            color = Color.White,
+                            shape = RectangleShape,
+                        )
+                        .align(Alignment.TopStart),
+                )
+            }
+
+            Box(
+                modifier = Modifier
                     .padding(horizontal = 10.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterStart),
@@ -139,87 +174,16 @@ private fun TextFieldDecoratorBox(
                 innerTextField()
             }
 
-            // TextField Border Animation
-//            androidx.compose.animation.AnimatedContent(
-//                targetState = isVisibleBorder,
-//                transitionSpec = {
-//                    fadeIn() togetherWith fadeOut()
-//                },
-//                label = "TextField Border Animation",
-//            ) { isVisible ->
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .fillMaxHeight()
-//                        .background(
-//                            color = Color.Transparent,
-//                            shape = RectangleShape,
-//                        )
-//                        .border(
-//                            border = BorderStroke(
-//                                1.5.dp,
-//                                colorResource(
-//                                    id =
-//                                    if (isVisible) com.suni.ui.R.color.tdr_default
-//                                    else com.suni.ui.R.color.transparent
-//                                )
-//                            ),
-//                            shape = RectangleShape,
-//                        ),
-//                )
-//            }
-
-            androidx.compose.animation.AnimatedVisibility(
-                visible = isVisibleBorder,
-                enter =
-                slideInHorizontally(animationSpec = tween(durationMillis = 200)) { fullWidth ->
-                    // Offsets the content by 1/3 of its width to the left, and slide towards right
-                    // Overwrites the default animation with tween for this slide animation.
-                    -fullWidth / 3
-                } +
-                        fadeIn(
-                            // Overwrites the default animation with tween
-                            animationSpec = tween(durationMillis = 200)
-                        ),
-                exit =
-                slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessHigh)) {
-                    // Overwrites the ending position of the slide-out to 200 (pixels) to the right
-                    200
-                } + fadeOut()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .background(
-                            color = Color.Transparent,
-                            shape = RectangleShape,
-                        )
-                        .border(
-                            border = BorderStroke(
-                                1.5.dp,
-                                colorResource(
-                                    id = com.suni.ui.R.color.tdr_default
-                                )
-                            ),
-                            shape = RectangleShape,
-                        ),
-                )
-            }
-
-            HorizontalDivider(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(1.5.dp),
-                color = colorResource(com.suni.ui.R.color.tdr_default),
-            )
         }
         // TextField Hint Animation
         androidx.compose.animation.AnimatedContent(
             targetState = isVisibleBorder,
             transitionSpec = {
-                fadeIn() togetherWith fadeOut()
+                slideInVertically(animationSpec = tween(durationMillis = 500)) { fullHeight ->
+                    +fullHeight
+                } togetherWith slideOutVertically(animationSpec = tween(durationMillis = 500)) { fullHeight ->
+                    +fullHeight
+                }
             },
             label = "TextField Hint Animation",
         ) { isMoveBottom ->
