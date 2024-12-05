@@ -41,6 +41,8 @@ enum class GroupScreenFlag {
     CREATE,
     MODIFY,
     DETAIL,
+    TODO_CREATE,
+    TODO_MODIFY,
 }
 const val KEY_TODO_FLAG = "TODO_FLAG"
 const val KEY_TODO_ID = "TODO_ID"

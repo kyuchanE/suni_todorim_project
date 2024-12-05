@@ -1,9 +1,7 @@
-package com.suni.todo.ui.component
+package com.suni.todogroup.ui.component
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,8 +12,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.suni.todo.R
 import com.suni.ui.component.AnimTextFieldDecoratorBox
 
 /**
@@ -35,8 +31,7 @@ fun InputTodoTitle(
             .focusRequester(textFieldFocusRequest)
             .onFocusChanged { focusState ->
                 isTextFieldFocused = focusState.isFocused
-            }
-            .padding(horizontal = 15.dp),
+            },
         value = strTitle,
         onValueChange = {
             titleChangeEvent(it)

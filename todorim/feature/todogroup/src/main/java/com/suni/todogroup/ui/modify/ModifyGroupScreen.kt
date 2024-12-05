@@ -77,16 +77,17 @@ fun ModifyGroupScreen(
                 GroupTitle(
                     context = context,
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
                     isCreateMode = false,
-
                 )
                 Spacer(modifier = Modifier.height(35.dp))
                 // 그룹 색상 선택
                 SelectGroupColor(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
                     strTitle = strGroupTitle,
                     titleChangeEvent = { str ->
                         strGroupTitle.value = str

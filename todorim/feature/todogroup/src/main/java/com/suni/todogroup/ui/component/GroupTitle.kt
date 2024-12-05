@@ -37,7 +37,7 @@ fun GroupTitle(
         else stringResource(id = R.string.modify_group_title)
 
     Row(
-        modifier = modifier.padding(horizontal = 15.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

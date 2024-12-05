@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AnimTextFieldDecoratorBox(
     strTitle: String,
+    strHint: String,
     isTextFieldFocused: Boolean,
     innerTextField : @Composable () -> Unit,
 ) {
@@ -140,7 +141,7 @@ fun AnimTextFieldDecoratorBox(
                             if (isMoveBottom) Alignment.BottomStart
                             else Alignment.CenterStart
                         ),
-                    text = stringResource(com.suni.ui.R.string.str_hint_group_name),
+                    text = strHint,
                     style =
                     if (isMoveBottom) MaterialTheme.typography.bodySmall
                     else MaterialTheme.typography.bodyMedium,

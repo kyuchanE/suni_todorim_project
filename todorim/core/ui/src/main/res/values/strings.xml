@@ -10,5 +10,6 @@
 
     <string name="str_create_group">그룹 추가</string>
     <string name="str_hint_group_name">그룹 이름을 입력하세요.</string>
+    <string name="str_hint_todo_name">할 일을 입력하세요.</string>
 
 </resources>

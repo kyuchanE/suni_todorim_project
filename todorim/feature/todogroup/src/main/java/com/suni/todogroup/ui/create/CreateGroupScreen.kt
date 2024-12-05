@@ -63,6 +63,7 @@ fun CreateGroupScreen(
                     context = context,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 15.dp)
 
                 )
                 Spacer(modifier = Modifier.height(35.dp))
@@ -70,7 +71,8 @@ fun CreateGroupScreen(
                 SelectGroupColor(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
                     strTitle = strGroupTitle,
                     titleChangeEvent = { str ->
                         strGroupTitle.value = str

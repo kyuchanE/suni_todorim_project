@@ -1,13 +1,10 @@
 package com.suni.todogroup.ui.detail
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -28,7 +25,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -55,27 +51,29 @@ import com.suni.data.model.TodoEntity
 import com.suni.domain.findActivity
 import com.suni.domain.getGradientEndColor
 import com.suni.domain.getGradientStartColor
+import com.suni.todogroup.activity.SharedElementTransition
 import com.suni.ui.R
 import com.suni.ui.component.GradientFloatingActionButton
 import com.suni.ui.component.LinearGradientProgressIndicator
 import com.suni.ui.component.TdrCheckBox
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun GroupDetailScreen(
     viewModel: GroupDetailScreenViewModel,
     groupId: Int,
     isNeedRefreshHome: Boolean = false,
-    todoNavigatorAction: (
-        launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    moveCreateTodoScreenAction: (
         todoMaxId: Int,
         groupColorIndex: Int,
-    ) -> Unit = { _, _, _ -> },
+    ) -> Unit = { _, _ -> },
     moveGroupModifyScreenAction: () -> Unit = {},
     moveTodoModifyScreenAction: (
-        launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
         todoId: Int,
         groupColorIndex: Int,
-    ) -> Unit = { _, _, _ -> },
+    ) -> Unit = { _, _ -> },
     refreshHomeScreenAction: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -87,15 +85,6 @@ fun GroupDetailScreen(
         if (isNeedRefreshHome)
             viewModel.setNeedRefreshState(true)
         viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId))
-    }
-
-    val todoScreenLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        // 할 일 생성 후, 수정 후
-        if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.onEvent(GroupDetailScreenEvents.LoadGroupData(groupId, true))
-        }
     }
 
     // 시스템 백키
@@ -152,7 +141,6 @@ fun GroupDetailScreen(
                     groupTodoList = groupTodoList,
                     moveTodoModifyScreenAction = { todoId ->
                         moveTodoModifyScreenAction(
-                            todoScreenLauncher,
                             todoId,
                             viewModel.state.groupData.appColorIndex,
                         )
@@ -165,9 +153,11 @@ fun GroupDetailScreen(
                 startColor = groupData.appColorIndex.getGradientStartColor(),
                 endColor = groupData.appColorIndex.getGradientEndColor(),
                 icon = Icons.Filled.Add,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                keySharedElement = SharedElementTransition.KEY_BOTTOM_BUTTON.name,
             ) {
-                todoNavigatorAction(
-                    todoScreenLauncher,
+                moveCreateTodoScreenAction(
                     viewModel.state.todoMaxId,
                     viewModel.state.groupData.appColorIndex,
                 )

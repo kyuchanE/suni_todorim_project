@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.suni.todogroup.R
 import com.suni.ui.component.AnimTextFieldDecoratorBox
 import com.suni.ui.component.ColorPalette
 
@@ -49,13 +51,13 @@ fun SelectGroupColor(
                 .onFocusChanged { focusState ->
                     isTextFieldFocused = focusState.isFocused
                 }
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                .fillMaxWidth(),
             textStyle = MaterialTheme.typography.bodyMedium,
             singleLine = true,
             decorationBox = { innerTextField ->
                 AnimTextFieldDecoratorBox(
                     strTitle = strTitle.value,
+                    strHint = stringResource(com.suni.ui.R.string.str_hint_group_name),
                     isTextFieldFocused = isTextFieldFocused,
                     innerTextField = innerTextField,
                 )
@@ -64,8 +66,7 @@ fun SelectGroupColor(
         Spacer(modifier = Modifier.height(25.dp))
         ColorPalette(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
+                .fillMaxWidth(),
             selectedIndex = selectedColorIndex,
             selectColorEvent = selectedColorEvent
         )
