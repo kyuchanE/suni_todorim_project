@@ -5,18 +5,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.suni.ui.R
 import java.text.SimpleDateFormat
+import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
 
@@ -27,7 +33,7 @@ import java.util.Locale
 @Composable
 fun TdrTimePickerContainer(
     modifier: Modifier,
-    onBottomButtonClickEvent: (selectedValue: String) -> Unit = {_ ->},
+    onBottomButtonClickEvent: (selectedValue: String) -> Unit = { _ -> },
 ) {
     val typeValues = remember { mutableListOf("오전", "오후") }
     val typePickerState = rememberPickerState()
@@ -86,7 +92,7 @@ enum class SelectOnePickerType(val valueList: List<String>) {
         listOf("일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일")
     ),
     DAY(
-        (1..31).map { it.toString()+"일" }
+        (1..31).map { it.toString() + "일" }
     )
 }
 
@@ -98,7 +104,7 @@ enum class SelectOnePickerType(val valueList: List<String>) {
 fun TdrSelectOnePickerContainer(
     modifier: Modifier,
     type: SelectOnePickerType,
-    onBottomButtonClickEvent: (selectedValue: Int) -> Unit = {_ ->},
+    onBottomButtonClickEvent: (selectedValue: Int) -> Unit = { _ -> },
 ) {
     val pickerState = rememberPickerState()
 
@@ -138,7 +144,7 @@ fun TdrSelectOnePickerContainer(
 fun TdrDatePicker(
     modifier: Modifier,
     yearNow: Int,
-    onDateSelected: (date:Date) -> Unit,
+    onDateSelected: (date: Date) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val datePickerState = rememberDatePickerState(yearRange = IntRange(yearNow, yearNow + 1))
@@ -162,7 +168,35 @@ fun TdrDatePicker(
             }
         }
     ) {
-        DatePicker(state = datePickerState)
+        DatePicker(
+            state = datePickerState,
+            title = {
+                Text(
+                    modifier = Modifier.padding(20.dp),
+                    text = stringResource(R.string.title_date_picker),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = colorResource(R.color.tdr_default)
+                )
+            },
+            headline = {
+                datePickerState.selectedDateMillis?.let {
+                    val date = convertMillisToDate(it)
+                    val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA)
+                    Text(
+                        modifier = Modifier.padding(20.dp),
+                        text = formatter.format(date),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colorResource(R.color.tdr_default),
+                    )
+                } ?: Text(
+                    modifier = Modifier.padding(20.dp),
+                    text = stringResource(R.string.head_line_date_picker),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colorResource(R.color.tdr_default),
+                )
+            },
+        )
+
     }
 }
 

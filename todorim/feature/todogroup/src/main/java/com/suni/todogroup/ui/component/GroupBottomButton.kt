@@ -42,7 +42,7 @@ fun GroupBottomButton(
         modifier = modifier,
     ) {
         if(!isCreateMode) {
-            // 그룹 제거
+            // 그룹 제거w
             Button(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)

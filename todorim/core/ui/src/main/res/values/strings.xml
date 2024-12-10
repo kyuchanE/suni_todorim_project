@@ -12,4 +12,7 @@
     <string name="str_hint_group_name">그룹 이름을 입력하세요.</string>
     <string name="str_hint_todo_name">할 일을 입력하세요.</string>
 
+    <string name="title_date_picker">알림 날짜 선택</string>
+    <string name="head_line_date_picker">날짜를 선택하세요.</string>
+
 </resources>

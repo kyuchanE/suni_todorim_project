@@ -354,6 +354,12 @@ private fun RepeatingOptionContainer(
         }
     }
 
+    val strHint = when (selectedType) {
+        TypeTimeRepeating.WEEK -> stringResource(id = com.suni.todo.R.string.str_every_week_hint)
+        TypeTimeRepeating.MONTH -> stringResource(id = com.suni.todo.R.string.str_every_month_hint)
+        else -> { "" }
+    }
+
     var rememberOptionTitle by remember { mutableStateOf("") }
 
     LaunchedEffect(selectedType, selectedOptionValue) {
@@ -363,6 +369,7 @@ private fun RepeatingOptionContainer(
     BottomArrowSelectBox(
         modifier = modifier,
         title = rememberOptionTitle,
-        onClickEvent = selectedOptionEvent
+        strHint = strHint,
+        onClickEvent = selectedOptionEvent,
     )
 }

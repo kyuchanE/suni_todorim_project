@@ -119,8 +119,8 @@ class GroupActivity : BaseActivity(){
                                     sharedTransitionScope = this@SharedTransitionLayout,
                                     animatedVisibilityScope = this@AnimatedContent,
                                     moveCreateTodoScreenAction = { todoMaxId, groupColorIndex ->
-                                        rememberMaxTodoId.value = todoMaxId
-                                        rememberColorIndex.value = groupColorIndex
+                                        rememberMaxTodoId.intValue = todoMaxId
+                                        rememberColorIndex.intValue = groupColorIndex
 
                                         rememberGroupFlag.value = GroupScreenFlag.TODO_CREATE.name
                                     },
@@ -132,12 +132,13 @@ class GroupActivity : BaseActivity(){
                                         rememberGroupFlag.value = GroupScreenFlag.MODIFY.name
                                     },
                                     moveTodoModifyScreenAction = { todoId, groupColorIndex ->
-                                        rememberColorIndex.value = groupColorIndex
-                                        rememberTodoId.value = todoId
+                                        rememberColorIndex.intValue = groupColorIndex
+                                        rememberTodoId.intValue = todoId
 
                                         rememberGroupFlag.value = GroupScreenFlag.TODO_MODIFY.name
                                     },
                                 )
+                                rememberNeedRefresh.value = false
                             }
                             GroupScreenFlag.MODIFY.name -> {
                                 // 그룹 수정
@@ -161,13 +162,12 @@ class GroupActivity : BaseActivity(){
                                 CreateTodoScreen(
                                     viewModel = todoCreateViewModel,
                                     groupId = groupId,
-                                    groupColorIndex = rememberColorIndex.value,
-                                    todoMaxId = rememberMaxTodoId.value,
+                                    groupColorIndex = rememberColorIndex.intValue,
+                                    todoMaxId = rememberMaxTodoId.intValue,
                                     sharedTransitionScope = this@SharedTransitionLayout,
                                     animatedVisibilityScope = this@AnimatedContent,
-                                    finishActivityAction = {
-                                        // TODO chan 뒤로가기 컨트롤 > 완료 후 새로고침 또는 닫기 처리
-                                        // TODO chan 완료 후 그룹 엑티비티에서 메인쪽으로 refresh 값을 전달 해야함
+                                    finishCreateTodoScreen = { isNeedRefresh ->
+                                        rememberNeedRefresh.value = isNeedRefresh
                                         rememberGroupFlag.value = rememberBackStack.value
                                     }
                                 )
@@ -178,10 +178,9 @@ class GroupActivity : BaseActivity(){
                                 ModifyTodoScreen(
                                     viewModel = todoModifyViewModel,
                                     todoId = groupId,
-                                    groupColorIndex = rememberColorIndex.value,
-                                    finishAndRefreshActivityAction = {
-                                        // TODO chan 뒤로가기 컨트롤 > 완료 후 새로고침 또는 닫기 처리
-                                        // TODO chan 완료 후 그룹 엑티비티에서 메인쪽으로 refresh 값을 전달 해야함
+                                    groupColorIndex = rememberColorIndex.intValue,
+                                    finishModifyTodoScreen = { isNeedRefresh ->
+                                        rememberNeedRefresh.value = isNeedRefresh
                                         rememberGroupFlag.value = rememberBackStack.value
                                     }
                                 )

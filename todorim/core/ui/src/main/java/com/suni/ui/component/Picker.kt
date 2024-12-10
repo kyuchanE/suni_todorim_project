@@ -1,5 +1,10 @@
 package com.suni.ui.component
 
+import android.content.Context
+import android.os.Build
+import android.os.CombinedVibration
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
@@ -26,14 +31,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TdrPicker(
     modifier: Modifier,
@@ -84,6 +91,9 @@ fun TdrPicker(
                 .fadingEdge(fadingEdgeGradient)
         ) {
             items(count = listScrollCount) { index ->
+                val haptic = LocalHapticFeedback.current
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
                 Text(
                     text = getItem(index),
                     maxLines = 1,

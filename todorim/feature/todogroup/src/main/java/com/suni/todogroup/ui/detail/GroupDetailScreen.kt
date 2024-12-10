@@ -7,6 +7,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -148,19 +151,35 @@ fun GroupDetailScreen(
                 )
             }
             // 하단 할 일 생성 버튼
-            GradientFloatingActionButton(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(horizontal = 35.dp, vertical = 55.dp),
-                startColor = groupData.appColorIndex.getGradientStartColor(),
-                endColor = groupData.appColorIndex.getGradientEndColor(),
-                icon = Icons.Filled.Add,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
-                keySharedElement = SharedElementTransition.KEY_BOTTOM_BUTTON.name,
-            ) {
-                moveCreateTodoScreenAction(
-                    viewModel.state.todoMaxId,
-                    viewModel.state.groupData.appColorIndex,
-                )
+            with(sharedTransitionScope) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(horizontal = 25.dp, vertical = 45.dp)
+                        .size(75.dp)
+                        .sharedBounds(
+                            rememberSharedContentState(SharedElementTransition.KEY_BOTTOM_BUTTON.name),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                            resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                contentScale = ContentScale.FillWidth,
+                                alignment = Alignment.Center
+                            )
+                        )
+                ) {
+                    GradientFloatingActionButton(
+                        modifier = Modifier.align(Alignment.Center),
+                        startColor = groupData.appColorIndex.getGradientStartColor(),
+                        endColor = groupData.appColorIndex.getGradientEndColor(),
+                        icon = Icons.Filled.Add,
+                    ) {
+                        moveCreateTodoScreenAction(
+                            viewModel.state.todoMaxId,
+                            viewModel.state.groupData.appColorIndex,
+                        )
+                    }
+                }
             }
 
         }

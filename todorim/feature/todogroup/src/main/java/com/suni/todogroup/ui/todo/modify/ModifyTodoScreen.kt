@@ -1,5 +1,6 @@
 package com.suni.todogroup.ui.todo.modify
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,7 @@ fun ModifyTodoScreen(
     viewModel: ModifyTodoScreenViewModel,
     todoId: Int,
     groupColorIndex: Int,
-    finishAndRefreshActivityAction: () -> Unit = {},
+    finishModifyTodoScreen: (isNeedRefresh: Boolean) -> Unit = {_ -> },
 ) {
     val context = LocalContext.current
 
@@ -48,7 +49,11 @@ fun ModifyTodoScreen(
     LaunchedEffect(viewModel.state.isFinished) {
         // 수정 완료 후
         if (viewModel.state.isFinished)
-            finishAndRefreshActivityAction()
+            finishModifyTodoScreen(viewModel.state.isFinished)
+    }
+
+    BackHandler {
+        finishModifyTodoScreen(viewModel.state.isFinished)
     }
 
     Scaffold { pv ->
@@ -64,9 +69,11 @@ fun ModifyTodoScreen(
             ) {
                 // 최상단 타이틀
                 TodoTitle(
-                    context = context,
                     modifier = Modifier.fillMaxWidth(),
                     isCreateMode = false,
+                    onCloseBtnClick = {
+                        finishModifyTodoScreen(viewModel.state.isFinished)
+                    }
                 )
                 // 할 일 정보 기입
                 LazyColumn(

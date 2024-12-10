@@ -1,7 +1,9 @@
 package com.suni.todogroup.ui.component
 
+import androidx.compose.animation.AnimatedContent
 import com.suni.ui.component.endColor
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -11,11 +13,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,9 +29,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.suni.domain.getTimeNow
 import com.suni.domain.toCommonTypeString
@@ -102,111 +111,120 @@ fun TimeAlarmContainer(
             colorIndex = colorIndex,
             onCheckedChangedEvent = onCheckedChangedEvent
         )
-        if (isChecked) {
-            // 시간 반복 타입 설정
-            SelectRepeatingContainer(
-                modifier = Modifier.fillMaxWidth(),
-                selectedType = type,
-                colorIndex = colorIndex,
-                onTypeClickEvent = onTypeClickEvent
-            )
-            Spacer(modifier = Modifier.height(15.dp))
-            // 반복 옵션
-            RepeatingOptionContainer(
-                modifier = Modifier.fillMaxWidth(),
-                selectedType = type,
-                selectedOptionValue =
-                if(type == TypeTimeRepeating.NONE) {
-                    selectedTypeOption.toDate("yyyy-MM-dd")?.toFullString() ?: ""
-                } else { selectedTypeOption },
-            ) {
-                when(type) {
-                    TypeTimeRepeating.NONE -> {
-                        // 반복 안함 특정 날짜 선택
-                        showDatePicker = true
-                    }
-                    TypeTimeRepeating.DAY -> {
-                        // 매일
-                    }
-                    else -> {
-                        // 반복 옵션 설정 값 선택 모달 뷰 (반복 할 특정 날짜, 요일, 일)
-                        showTypeOptionBottomSheet = true
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-            // 반복 시간 선택
-            BottomArrowSelectBox(
-                modifier = Modifier.fillMaxWidth(),
-                title = selectedTimeOption.ifEmpty {
-                    stringResource(id = com.suni.todogroup.R.string.str_time_hint)
-                },
-            ) {
-                // 반복 시간 선택 모달 뷰
-                showTimeBottomSheet = true
-            }
-            // 날짜 선택 피커
-            if (showDatePicker) {
-                TdrDatePicker(
-                    modifier = Modifier.fillMaxWidth(),
-                    yearNow = 2024,
-                    onDateSelected = { date ->
-                        showDatePicker = false
-                        selectedTypeOptionEvent(date.toCommonTypeString() ?: "")
-                    },
-                    onDismiss = {
-                        showDatePicker = false
-                    },
-                )
-            }
-            // 모달 뷰
-            if (showTypeOptionBottomSheet || showTimeBottomSheet) {
-                val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-                val coroutineScope = rememberCoroutineScope()
-
-                ModalBottomSheet(
-                    sheetState = sheetState,
-                    onDismissRequest = {
-                        showTimeBottomSheet = false
-                        showTypeOptionBottomSheet = false
-                    },
-                ) {
-                    if (showTimeBottomSheet) {
-                        // 반복 시간 선택
-                        TdrTimePickerContainer(
-                            modifier = Modifier.fillMaxWidth()
-                        ) { selectedValue ->
-                            coroutineScope.launch {
-                                sheetState.hide()
-                                selectedTimeOptionEvent(selectedValue)
-                            }.invokeOnCompletion {
-                                showTimeBottomSheet = false
-                                showTypeOptionBottomSheet = false
+        Spacer(modifier = Modifier.height(10.dp))
+        // 시간 알림 선택 옵션 (애니메이션)
+        AnimatedContent(
+            targetState = isChecked,
+            label = "Animation TimeAlarmContainer",
+        ) { targetState ->
+            if (targetState) {
+                Column {
+                    // 시간 반복 타입 설정
+                    SelectRepeatingContainer(
+                        modifier = Modifier.fillMaxWidth(),
+                        selectedType = type,
+                        colorIndex = colorIndex,
+                        onTypeClickEvent = onTypeClickEvent
+                    )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    // 반복 옵션
+                    RepeatingOptionContainer(
+                        modifier = Modifier.fillMaxWidth().height(55.dp),
+                        selectedType = type,
+                        selectedOptionValue =
+                        if(type == TypeTimeRepeating.NONE) {
+                            selectedTypeOption.toDate("yyyy-MM-dd")?.toFullString() ?: ""
+                        } else { selectedTypeOption },
+                    ) {
+                        when(type) {
+                            TypeTimeRepeating.NONE -> {
+                                // 반복 안함 특정 날짜 선택
+                                showDatePicker = true
+                            }
+                            TypeTimeRepeating.DAY -> {
+                                // 매일
+                            }
+                            else -> {
+                                // 반복 옵션 설정 값 선택 모달 뷰 (반복 할 특정 날짜, 요일, 일)
+                                showTypeOptionBottomSheet = true
                             }
                         }
-                    } else if (showTypeOptionBottomSheet) {
-                        // 반복 옵션 설정 값 선택 (반복 할 특정 날짜, 요일, 일)
-                        val pickerType =
-                            if (type == TypeTimeRepeating.WEEK)
-                                SelectOnePickerType.DAY_OF_WEEK
-                            else SelectOnePickerType.DAY
-
-                        TdrSelectOnePickerContainer(
+                    }
+                    Spacer(modifier = Modifier.height(15.dp))
+                    // 반복 시간 선택
+                    BottomArrowSelectBox(
+                        modifier = Modifier.fillMaxWidth().height(55.dp),
+                        title = selectedTimeOption.ifEmpty {
+                            stringResource(id = com.suni.todogroup.R.string.str_time_hint)
+                        },
+                        strHint = stringResource(id = com.suni.todogroup.R.string.str_time_hint),
+                    ) {
+                        // 반복 시간 선택 모달 뷰
+                        showTimeBottomSheet = true
+                    }
+                    // 날짜 선택 피커
+                    if (showDatePicker) {
+                        TdrDatePicker(
                             modifier = Modifier.fillMaxWidth(),
-                            type = pickerType
-                        ) { selectedValue ->
-                            coroutineScope.launch {
-                                sheetState.hide()
-                                selectedTypeOptionEvent(selectedValue.toString())
-                            }.invokeOnCompletion {
+                            yearNow = 2024,
+                            onDateSelected = { date ->
+                                showDatePicker = false
+                                selectedTypeOptionEvent(date.toCommonTypeString() ?: "")
+                            },
+                            onDismiss = {
+                                showDatePicker = false
+                            },
+                        )
+                    }
+                    // 모달 뷰
+                    if (showTypeOptionBottomSheet || showTimeBottomSheet) {
+                        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                        val coroutineScope = rememberCoroutineScope()
+
+                        ModalBottomSheet(
+                            sheetState = sheetState,
+                            onDismissRequest = {
                                 showTimeBottomSheet = false
                                 showTypeOptionBottomSheet = false
+                            },
+                        ) {
+                            if (showTimeBottomSheet) {
+                                // 반복 시간 선택
+                                TdrTimePickerContainer(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { selectedValue ->
+                                    coroutineScope.launch {
+                                        sheetState.hide()
+                                        selectedTimeOptionEvent(selectedValue)
+                                    }.invokeOnCompletion {
+                                        showTimeBottomSheet = false
+                                        showTypeOptionBottomSheet = false
+                                    }
+                                }
+                            } else if (showTypeOptionBottomSheet) {
+                                // 반복 옵션 설정 값 선택 (반복 할 특정 날짜, 요일, 일)
+                                val pickerType =
+                                    if (type == TypeTimeRepeating.WEEK)
+                                        SelectOnePickerType.DAY_OF_WEEK
+                                    else SelectOnePickerType.DAY
+
+                                TdrSelectOnePickerContainer(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    type = pickerType
+                                ) { selectedValue ->
+                                    coroutineScope.launch {
+                                        sheetState.hide()
+                                        selectedTypeOptionEvent(selectedValue.toString())
+                                    }.invokeOnCompletion {
+                                        showTimeBottomSheet = false
+                                        showTypeOptionBottomSheet = false
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-
         }
     }
 }
@@ -236,6 +254,13 @@ private fun TimeAlarmTitle(
         )
         Switch(
             checked = rememberChecked,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = colorResource(id = endColor(colorIndex)),
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color.LightGray,
+                uncheckedBorderColor = Color.LightGray,
+            ),
             onCheckedChange = { checked ->
                 rememberChecked = checked
                 onCheckedChangedEvent(checked)
@@ -256,7 +281,9 @@ private fun SelectRepeatingContainer(
 ) {
     // 반복 타입 설정 탭
     Row(
-        modifier = modifier.height(45.dp)
+        modifier = modifier
+            .height(55.dp)
+            .border(width = 1.dp, color = Color.LightGray, shape = RectangleShape)
     ) {
         // 반복안함
         RepeatingTypeBox(
@@ -268,6 +295,7 @@ private fun SelectRepeatingContainer(
             colorIndex = colorIndex,
             onClickEvent = onTypeClickEvent,
         )
+        RepeatingTypeBoxDivider()
         // 매일
         RepeatingTypeBox(
             modifier = Modifier
@@ -278,6 +306,7 @@ private fun SelectRepeatingContainer(
             colorIndex = colorIndex,
             onClickEvent = onTypeClickEvent,
         )
+        RepeatingTypeBoxDivider()
         // 매주
         RepeatingTypeBox(
             modifier = Modifier
@@ -288,6 +317,7 @@ private fun SelectRepeatingContainer(
             colorIndex = colorIndex,
             onClickEvent = onTypeClickEvent,
         )
+        RepeatingTypeBoxDivider()
         // 매월
         RepeatingTypeBox(
             modifier = Modifier
@@ -320,7 +350,8 @@ private fun RepeatingTypeBox(
             .background(
                 color = colorResource(
                     id = if (isSelected) endColor(colorIndex) else R.color.white
-                )
+                ),
+                shape = RectangleShape
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -328,8 +359,16 @@ private fun RepeatingTypeBox(
             ) {
                 onClickEvent(type)
             },
+        contentAlignment = Alignment.Center,
     ) {
-        Text(text = stringResource(id = type.titleStrId))
+        Text(
+            text = stringResource(id = type.titleStrId),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colorResource(
+                id = if (isSelected) R.color.white else R.color.tdr_default
+            ),
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 
 }
@@ -354,6 +393,12 @@ private fun RepeatingOptionContainer(
         }
     }
 
+    val strHint = when (selectedType) {
+        TypeTimeRepeating.WEEK -> stringResource(id = com.suni.todogroup.R.string.str_every_week_hint)
+        TypeTimeRepeating.MONTH -> stringResource(id = com.suni.todogroup.R.string.str_every_month_hint)
+        else -> { "" }
+    }
+
     var rememberOptionTitle by remember { mutableStateOf("") }
 
     LaunchedEffect(selectedType, selectedOptionValue) {
@@ -363,6 +408,16 @@ private fun RepeatingOptionContainer(
     BottomArrowSelectBox(
         modifier = modifier,
         title = rememberOptionTitle,
+        strHint = strHint,
         onClickEvent = selectedOptionEvent
+    )
+}
+
+@Composable
+private fun RepeatingTypeBoxDivider() {
+    VerticalDivider(
+        modifier = Modifier.width(1.dp).fillMaxHeight(),
+        thickness = 1.dp,
+        color = Color.LightGray
     )
 }

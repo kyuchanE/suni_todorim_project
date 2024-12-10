@@ -1,5 +1,6 @@
 package com.suni.todogroup.ui.todo.create
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -9,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,9 +24,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,9 +51,8 @@ fun CreateTodoScreen(
     todoMaxId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    finishActivityAction: () -> Unit = {},
+    finishCreateTodoScreen: (isNeedRefresh: Boolean) -> Unit = {_ -> },
 ) {
-    val context = LocalContext.current
     val isFinished = viewModel.state.isFinished
     val currentFocus = LocalFocusManager.current
 
@@ -62,7 +64,11 @@ fun CreateTodoScreen(
 
     LaunchedEffect(isFinished) {
         if (isFinished)
-            finishActivityAction()
+            finishCreateTodoScreen(isFinished)
+    }
+
+    BackHandler {
+        finishCreateTodoScreen(isFinished)
     }
 
     Scaffold { pv ->
@@ -87,10 +93,12 @@ fun CreateTodoScreen(
             ) {
                 // 최상단 타이틀
                 TodoTitle(
-                    context = context,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 15.dp)
+                        .padding(horizontal = 15.dp),
+                    onCloseBtnClick = {
+                        finishCreateTodoScreen(isFinished)
+                    }
                 )
                 // 할 일 정보 기입
                 LazyColumn(
@@ -110,9 +118,12 @@ fun CreateTodoScreen(
                         }
                     }
                     item {
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
                         // 특정 시간 알림
                         TimeAlarmContainer(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
                             colorIndex = groupColorIndex,
                             type = timeAlarmType,
                             isChecked = isCheckedTimeAlarm,
@@ -154,7 +165,10 @@ fun CreateTodoScreen(
                                     animatedVisibilityScope = animatedVisibilityScope,
                                     enter = fadeIn(),
                                     exit = fadeOut(),
-                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(
+                                        contentScale = ContentScale.FillHeight,
+                                        alignment = Alignment.CenterEnd
+                                    )
                                 ),
                             selectedColorIndex = groupColorIndex,
                         ) {
