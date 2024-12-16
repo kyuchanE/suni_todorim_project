@@ -37,6 +37,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.suni.domain.convertToStrMonth
+import com.suni.domain.convertToStrWeek
 import com.suni.domain.getTimeNow
 import com.suni.domain.toCommonTypeString
 import com.suni.domain.toDate
@@ -384,12 +386,19 @@ private fun RepeatingOptionContainer(
     selectedOptionValue: String = "",
     selectedOptionEvent: () -> Unit = {},
 ) {
-    val initTitleStr = selectedOptionValue.ifEmpty {
+    val initTitleStr = if(selectedOptionValue.isEmpty()) {
         when (selectedType) {
             TypeTimeRepeating.NONE -> "yyyyMMdd".getTimeNow().toDate()?.toFullString() ?: ""
             TypeTimeRepeating.DAY -> stringResource(id = selectedType.titleStrId)
             TypeTimeRepeating.WEEK -> stringResource(id = com.suni.todogroup.R.string.str_every_week_hint)
             TypeTimeRepeating.MONTH -> stringResource(id = com.suni.todogroup.R.string.str_every_month_hint)
+        }
+    } else {
+        when (selectedType) {
+            TypeTimeRepeating.NONE,
+            TypeTimeRepeating.DAY -> selectedOptionValue
+            TypeTimeRepeating.WEEK -> selectedOptionValue.convertToStrWeek()
+            TypeTimeRepeating.MONTH -> selectedOptionValue.convertToStrMonth()
         }
     }
 

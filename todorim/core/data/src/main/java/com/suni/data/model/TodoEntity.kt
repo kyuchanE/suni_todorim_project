@@ -19,7 +19,7 @@ class TodoEntity: RealmObject {
     var week: Int = 0                   // 1: 일요일 - 7: 토요일
     var day: Int = 0                    // 1 ~ 31
     var everyDay: Boolean = false       // 매일? or 단 하루
-    var notiTime: String = ""           // 시간 (hh:mm)
+    var notiTime: String = ""           // 시간 (HH:mm)
     var isLocationNoti: Boolean = false // 위치 알림 여부
     var locationName: String = ""       // 위치 이름
     var longitude: Double = 0.0

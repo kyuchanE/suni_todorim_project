@@ -31,7 +31,7 @@ class AlarmReceiver : BroadcastReceiver() {
         const val KEY_ALARM_TYPE = "KEY_ALARM_TYPE"     // 시간 알림 / 위치 알림
         const val KEY_TIME_ALARM_TYPE = "KEY_TIME_ALARM_TYPE"       // 매일 / 매주 / 매월
         const val KEY_NOTI_TITLE = "KEY_NOTI_TITLE"                 // 알림 제목
-        const val KEY_TIME_VALUE = "KEY_TIME_VALUE"         // yyyy-mm-dd hh:mm
+        const val KEY_TIME_VALUE = "KEY_TIME_VALUE"         // yyyy-mm-dd HH:mm
         const val KEY_TODO_ID_FOR_REQ_CODE = "KEY_TODO_ID_FOR_REQ_CODE"     // 할일 ID
     }
 
@@ -107,7 +107,7 @@ class AlarmReceiver : BroadcastReceiver() {
         todoId: Int,
         title: String,
     ) {
-        val targetCalendar = alarmTime.convertToCalendar("yyyy-MM-dd hh:mm")
+        val targetCalendar = alarmTime.convertToCalendar("yyyy-MM-dd HH:mm")
         run timeAlarmLoop@{
             when (timeAlarmType) {
                 TimeAlarmType.ONCE.strName -> {
@@ -136,7 +136,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 todoId = todoId,
                 todoTitle = title,
                 alarmType = alarmType,
-                timeValue = targetCalendar.convertToString("yyyy-MM-dd hh:mm"),
+                timeValue = targetCalendar.convertToString("yyyy-MM-dd HH:mm"),
                 timeAlarmType = timeAlarmType,
             )
         }

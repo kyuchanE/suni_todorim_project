@@ -1,11 +1,5 @@
 package com.suni.ui.component
 
-import android.content.Context
-import android.os.Build
-import android.os.CombinedVibration
-import android.os.VibrationEffect
-import android.os.Vibrator
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -33,13 +27,14 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun TdrPicker(
@@ -120,7 +115,6 @@ fun TdrPicker(
 
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TdrTimePicker(
     modifier: Modifier,
@@ -130,13 +124,13 @@ fun TdrTimePicker(
     startIndex: Int = 0,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
-    dividerColor: Color = LocalContentColor.current,
 ) {
     val listScrollCount = items.size
 
     fun getItem(index: Int) = items[index]
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = startIndex)
+
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     val itemHeightPixels = remember { mutableStateOf(0) }
@@ -187,16 +181,6 @@ fun TdrTimePicker(
                 Spacer(modifier = Modifier.height(itemHeightDp))
             }
         }
-
-//        HorizontalDivider(
-//            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
-//            color = dividerColor,
-//        )
-//
-//        HorizontalDivider(
-//            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
-//            color = dividerColor,
-//        )
 
     }
 

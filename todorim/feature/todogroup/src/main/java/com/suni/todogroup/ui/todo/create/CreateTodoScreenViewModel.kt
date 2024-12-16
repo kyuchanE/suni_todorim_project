@@ -62,7 +62,7 @@ class CreateTodoScreenViewModel @Inject constructor(
             this.title = todoEntity.title
             this.isDateNoti = todoEntity.isDateNoti
             this.date = targetCalendar.convertToString("yyyy-MM-dd")
-            this.notiTime = targetCalendar.convertToString("hh:mm")
+            this.notiTime = targetCalendar.convertToString("HH:mm")
             this.everyDay = todoEntity.everyDay
             this.day = todoEntity.day
             this.week = todoEntity.week

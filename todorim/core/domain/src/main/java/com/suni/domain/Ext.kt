@@ -85,6 +85,27 @@ fun String.toDate(pattern: String = "yyyyMMdd"): Date? {
 }
 
 /**
+ * 요일 변환
+ */
+fun String.convertToStrWeek(): String {
+    return when(this) {
+        "1" -> "일요일"
+        "2" -> "월요일"
+        "3" -> "화요일"
+        "4" -> "수요일"
+        "5" -> "목요일"
+        "6" -> "금요일"
+        "7" -> "토요일"
+        else -> this
+    }
+}
+
+/**
+ * 월 변환
+ */
+fun String.convertToStrMonth(): String = this + "일"
+
+/**
  * @return String 메인 월/일 표시
  */
 fun getStrHomeDate(): String {

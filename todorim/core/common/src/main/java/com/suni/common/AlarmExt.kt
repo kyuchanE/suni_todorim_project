@@ -37,7 +37,7 @@ fun AlarmManager.cancelTodoAlarm(context: Context, todoId: Int) {
  * @param context
  * @param targetCalendar 다음 알람 시간
  * @param alarmType  알림 타입 (시간 알림 / 위치 알림)
- * @param timeValue  알림 시간 값 (yyyy-mm-dd hh:mm)
+ * @param timeValue  알림 시간 값 (yyyy-mm-dd HH:mm)
  * @param timeAlarmType  알림 시간 타입 (매일 / 매주 / 매월)
  * @param todoId 할일 ID
  * @param todoTitle 할일 제목

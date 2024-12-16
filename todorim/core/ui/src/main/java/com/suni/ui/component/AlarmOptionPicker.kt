@@ -1,5 +1,7 @@
 package com.suni.ui.component
 
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +18,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -37,29 +40,45 @@ fun TdrTimePickerContainer(
 ) {
     val typeValues = remember { mutableListOf("오전", "오후") }
     val typePickerState = rememberPickerState()
-    val hourValues = remember { (1..12).map { it.toString() } }
+    val hourValues = remember { mutableListOf("12","1","2","3","4","5","6","7","8","9","10","11") }
     val hourPickerState = rememberPickerState()
     val minuteValues = remember { (0..59 step 5).map { it.toString() } }
     val minutePickerState = rememberPickerState()
 
     Column(
-        modifier = modifier.height(155.dp),
+        modifier = modifier.height(255.dp).padding(vertical = 15.dp),
     ) {
         // 시간 선택
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // AM/PM
             TdrTimePicker(
-                modifier = Modifier.weight(2f),
+                modifier = Modifier.weight(1f),
                 items = typeValues,
                 state = typePickerState,
+                startIndex = try {
+                    if ("HH".getTimeNow().toInt() in 12..23) {
+                        1   // PM
+                    } else {
+                        0   // AM
+                    }
+                } catch (e: Exception) {
+                    0   // default AM
+                }
             )
             // 시간 선택
             TdrPicker(
                 modifier = Modifier.weight(1f),
                 items = hourValues,
                 state = hourPickerState,
+                startIndex = try {
+                    "HH".getTimeNow().toInt() % 12
+                } catch (e: Exception) {
+                    0
+                }
             )
             // 분 선택
             TdrPicker(
@@ -218,3 +237,14 @@ private fun timePickerValue(
 
 
 fun convertMillisToDate(millis: Long): Date = Date(millis)
+
+private fun String.getTimeNow(): String {
+    return try {
+        val date = Date(System.currentTimeMillis())
+        val simpleDateFormat = SimpleDateFormat(this)
+        Log.d("@@@@@@@@", "@@@@@@@@@ ${simpleDateFormat.format(date)}")
+        simpleDateFormat.format(date)
+    } catch (e: Exception) {
+        ""
+    }
+}
