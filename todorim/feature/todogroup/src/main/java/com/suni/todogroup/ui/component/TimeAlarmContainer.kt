@@ -49,6 +49,7 @@ import com.suni.ui.component.SelectOnePickerType
 import com.suni.ui.component.TdrTimePickerContainer
 import com.suni.ui.component.TdrDatePicker
 import com.suni.ui.component.TdrSelectOnePickerContainer
+import com.suni.ui.component.TdrTimePicker
 import kotlinx.coroutines.launch
 
 enum class TypeTimeRepeating(val titleStrId: Int) {
@@ -77,7 +78,7 @@ fun TimeAlarmContainer(
     onCheckedChangedEvent: (checked: Boolean) -> Unit = {_ ->},
     onTypeClickEvent: (type: TypeTimeRepeating) -> Unit = {_ ->},
     selectedTypeOptionEvent: (typeOption: String) -> Unit = {_->},
-    selectedTimeOptionEvent: (timeOption: String) -> Unit = {_->},
+    selectedTimeOptionEvent: (timeOption: String) -> Unit = {_->},      // HH:mm 형태로 전달
 ) {
 
     var repeatingTypeNoneOption by remember { mutableStateOf("") }
@@ -131,7 +132,9 @@ fun TimeAlarmContainer(
                     Spacer(modifier = Modifier.height(15.dp))
                     // 반복 옵션
                     RepeatingOptionContainer(
-                        modifier = Modifier.fillMaxWidth().height(55.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp),
                         selectedType = type,
                         selectedOptionValue =
                         if(type == TypeTimeRepeating.NONE) {
@@ -155,7 +158,9 @@ fun TimeAlarmContainer(
                     Spacer(modifier = Modifier.height(15.dp))
                     // 반복 시간 선택
                     BottomArrowSelectBox(
-                        modifier = Modifier.fillMaxWidth().height(55.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp),
                         title = selectedTimeOption.ifEmpty {
                             stringResource(id = com.suni.todogroup.R.string.str_time_hint)
                         },
@@ -178,32 +183,18 @@ fun TimeAlarmContainer(
                             },
                         )
                     }
-                    // 모달 뷰
-                    if (showTypeOptionBottomSheet || showTimeBottomSheet) {
+                    // 모달 뷰 - 반복 옵션 설정 값 선택 (반복 할 특정 날짜, 요일, 일)
+                    if (showTypeOptionBottomSheet) {
                         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                         val coroutineScope = rememberCoroutineScope()
 
                         ModalBottomSheet(
                             sheetState = sheetState,
                             onDismissRequest = {
-                                showTimeBottomSheet = false
                                 showTypeOptionBottomSheet = false
                             },
                         ) {
-                            if (showTimeBottomSheet) {
-                                // 반복 시간 선택
-                                TdrTimePickerContainer(
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { selectedValue ->
-                                    coroutineScope.launch {
-                                        sheetState.hide()
-                                        selectedTimeOptionEvent(selectedValue)
-                                    }.invokeOnCompletion {
-                                        showTimeBottomSheet = false
-                                        showTypeOptionBottomSheet = false
-                                    }
-                                }
-                            } else if (showTypeOptionBottomSheet) {
+                            if (showTypeOptionBottomSheet) {
                                 // 반복 옵션 설정 값 선택 (반복 할 특정 날짜, 요일, 일)
                                 val pickerType =
                                     if (type == TypeTimeRepeating.WEEK)
@@ -218,12 +209,25 @@ fun TimeAlarmContainer(
                                         sheetState.hide()
                                         selectedTypeOptionEvent(selectedValue.toString())
                                     }.invokeOnCompletion {
-                                        showTimeBottomSheet = false
                                         showTypeOptionBottomSheet = false
                                     }
                                 }
                             }
                         }
+                    }
+
+                    if (showTimeBottomSheet) {
+                        // 반복 시간 선택
+                        TdrTimePicker(
+                            onConfirm = { timePickerState ->
+                                // HH:mm String 형태로 보내야 함
+                                selectedTimeOptionEvent(
+                                    "${timePickerState.hour}:${timePickerState.minute}"
+                                )
+                                showTimeBottomSheet = false
+                            },
+                            onDismiss = { showTimeBottomSheet = false }
+                        )
                     }
                 }
             }
@@ -425,7 +429,9 @@ private fun RepeatingOptionContainer(
 @Composable
 private fun RepeatingTypeBoxDivider() {
     VerticalDivider(
-        modifier = Modifier.width(1.dp).fillMaxHeight(),
+        modifier = Modifier
+            .width(1.dp)
+            .fillMaxHeight(),
         thickness = 1.dp,
         color = Color.LightGray
     )

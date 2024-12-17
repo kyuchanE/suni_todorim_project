@@ -1,5 +1,6 @@
 package com.suni.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -8,10 +9,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -29,11 +38,16 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import com.suni.ui.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 
 @Composable
@@ -115,6 +129,27 @@ fun TdrPicker(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TdrTimePicker(
+    onConfirm: (TimePickerState) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val currentTime = Calendar.getInstance()
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = false,
+    )
+
+    TimePickerDialog(
+        onDismiss = { onDismiss() },
+        onConfirm = { onConfirm(timePickerState) },
+        timePickerState = timePickerState,
+    )
+}
+
 @Composable
 fun TdrTimePicker(
     modifier: Modifier,
@@ -167,6 +202,7 @@ fun TdrTimePicker(
                 Spacer(modifier = Modifier.height(itemHeightDp))
             }
             items(count = listScrollCount) { index ->
+                Log.d("@@@@@@", "TdrTimePicker >> index >> $index")
                 Text(
                     text = getItem(index),
                     maxLines = 1,
@@ -184,6 +220,54 @@ fun TdrTimePicker(
 
     }
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    timePickerState: TimePickerState,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text(
+                    text = stringResource(R.string.str_cancel),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colorResource(R.color.tdr_default)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text(
+                    text = stringResource(R.string.str_confirm),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colorResource(R.color.tdr_default)
+                )
+            }
+        },
+        icon = {
+            Icon(
+                painterResource(id = R.drawable.baseline_access_time_filled_24),
+                contentDescription = "Time Picker",
+            )
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.title_time_picker),
+                style = MaterialTheme.typography.titleMedium,
+                color = colorResource(R.color.tdr_default),
+            )
+        },
+        text = {
+            TimePicker(
+                state = timePickerState,
+            )
+        }
+    )
 }
 
 private fun Modifier.fadingEdge(brush: Brush) = this

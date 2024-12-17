@@ -33,6 +33,7 @@ import java.util.Locale
  *  시간 선택
  *  @param onBottomButtonClickEvent 선택 완료 후 이벤트
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TdrTimePickerContainer(
     modifier: Modifier,
@@ -69,6 +70,7 @@ fun TdrTimePickerContainer(
                     0   // default AM
                 }
             )
+
             // 시간 선택
             TdrPicker(
                 modifier = Modifier.weight(1f),

@@ -38,6 +38,7 @@ import com.suni.ui.component.SelectOnePickerType
 import com.suni.ui.component.TdrTimePickerContainer
 import com.suni.ui.component.TdrDatePicker
 import com.suni.ui.component.TdrSelectOnePickerContainer
+import com.suni.ui.component.TdrTimePicker
 import kotlinx.coroutines.launch
 
 enum class TypeTimeRepeating(val titleStrId: Int) {
@@ -184,6 +185,7 @@ fun TimeAlarmContainer(
                                 showTypeOptionBottomSheet = false
                             }
                         }
+
                     } else if (showTypeOptionBottomSheet) {
                         // 반복 옵션 설정 값 선택 (반복 할 특정 날짜, 요일, 일)
                         val pickerType =
