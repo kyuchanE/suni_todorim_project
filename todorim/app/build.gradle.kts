@@ -63,7 +63,6 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.common)
     implementation(projects.navigator)
-    implementation(projects.feature.todo)
     implementation(projects.feature.todogroup)
     implementation(projects.feature.settings)
 

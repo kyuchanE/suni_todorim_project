@@ -22,7 +22,6 @@ import com.suni.navigator.GroupScreenFlag
 import com.suni.navigator.KEY_GROUP_ID
 import com.suni.navigator.KEY_GROUP_MAX_ID
 import com.suni.navigator.KEY_GROUP_MAX_ORDER_ID
-import com.suni.navigator.TodoNavigator
 import com.suni.todogroup.ui.create.CreateGroupScreen
 import com.suni.todogroup.ui.create.CreateGroupScreenViewModel
 import com.suni.todogroup.ui.detail.GroupDetailScreen
@@ -48,9 +47,6 @@ enum class SharedElementTransition {
  */
 @AndroidEntryPoint
 class GroupActivity : BaseActivity(){
-
-    @Inject
-    lateinit var todoNavigator: TodoNavigator
 
     @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
