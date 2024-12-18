@@ -2,11 +2,9 @@ package com.suni.domain
 
 import android.app.Activity
 import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import com.suni.common.receiver.AlarmReceiver
@@ -235,28 +233,15 @@ fun Context.findActivity(): Activity {
     throw IllegalStateException("no activity")
 }
 
-inline fun <reified T: Activity> Activity.startActivityWithAnimation(
+inline fun <reified T: Activity> Activity.startActivityWithFinish(
     intentBuilder: Intent.() -> Intent = { this },
     withFinish: Boolean = true
 ) {
     startActivity(Intent(this, T::class.java).intentBuilder())
-    if (Build.VERSION.SDK_INT >= 34) {
-        overrideActivityTransition(
-            Activity.OVERRIDE_TRANSITION_OPEN,
-            android.R.anim.fade_in,
-            android.R.anim.fade_out,
-        )
-    } else {
-        @Suppress("DEPRECATION")
-        overridePendingTransition(
-            android.R.anim.fade_in,
-            android.R.anim.fade_out,
-        )
-    }
     if (withFinish) finish()
 }
 
-inline fun <reified T: Activity> Activity.resultLauncherWithAnimation(
+inline fun <reified T: Activity> Activity.resultLauncherWithFinish(
     intentBuilder: Intent.() -> Intent = { this },
     activityResultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     withFinish: Boolean = true
@@ -264,19 +249,6 @@ inline fun <reified T: Activity> Activity.resultLauncherWithAnimation(
     activityResultLauncher.launch(
         Intent(this, T::class.java).intentBuilder()
     )
-    if (Build.VERSION.SDK_INT >= 34) {
-        overrideActivityTransition(
-            Activity.OVERRIDE_TRANSITION_OPEN,
-            android.R.anim.fade_in,
-            android.R.anim.fade_out,
-        )
-    } else {
-        @Suppress("DEPRECATION")
-        overridePendingTransition(
-            android.R.anim.fade_in,
-            android.R.anim.fade_out,
-        )
-    }
     if (withFinish) finish()
 }
 

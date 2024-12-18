@@ -100,6 +100,7 @@ fun CreateTodoScreen(
                         finishCreateTodoScreen(isFinished)
                     }
                 )
+                Spacer(modifier = Modifier.height(35.dp))
                 // 할 일 정보 기입
                 LazyColumn(
                     modifier = Modifier

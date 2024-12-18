@@ -34,7 +34,6 @@ import com.suni.todogroup.ui.todo.modify.ModifyTodoScreenViewModel
 import com.suni.todogroup.ui.todo.modify.ModifyTodoScreen
 import com.suni.ui.theme.SuniTodorimTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 enum class SharedElementTransition {
     KEY_BACKGROUND,

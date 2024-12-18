@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.suni.common.R
 import kotlinx.coroutines.coroutineScope
 
 /**
@@ -27,6 +28,13 @@ abstract class BaseActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        enterActivityAnimation()
+    }
+
+    override fun finish() {
+        super.finish()
+
+        exitActivityAnimation()
     }
 }
 
@@ -183,4 +191,42 @@ fun Window.setSubStatusBarAndNavigationBarColor() {
         }
     }
 
+}
+
+/**
+ * 엑티비티 진입 애니메이션
+ */
+private fun Activity.enterActivityAnimation() {
+    if (Build.VERSION.SDK_INT >= 34) {
+        overrideActivityTransition(
+            Activity.OVERRIDE_TRANSITION_OPEN,
+            R.anim.enter_fade_in,
+            R.anim.none
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        overridePendingTransition(
+            R.anim.enter_fade_in,
+            R.anim.none,
+        )
+    }
+}
+
+/**
+ * 엑티비티 종료 애니메이션
+ */
+private fun Activity.exitActivityAnimation() {
+    if (Build.VERSION.SDK_INT >= 34) {
+        overrideActivityTransition(
+            Activity.OVERRIDE_TRANSITION_CLOSE,
+            R.anim.none,
+            R.anim.exit_fade_out,
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        overridePendingTransition(
+            R.anim.none,
+            R.anim.exit_fade_out,
+        )
+    }
 }

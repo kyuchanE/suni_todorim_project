@@ -46,9 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.suni.ui.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 
 @Composable
 fun TdrPicker(
@@ -143,88 +141,16 @@ fun TdrTimePicker(
         is24Hour = false,
     )
 
-    TimePickerDialog(
+    TdrTimePickerDialog(
         onDismiss = { onDismiss() },
         onConfirm = { onConfirm(timePickerState) },
         timePickerState = timePickerState,
     )
 }
 
-@Composable
-fun TdrTimePicker(
-    modifier: Modifier,
-    state: PickerState = rememberPickerState(),
-    items: List<String>,
-    visibleItemsCount: Int = 3,
-    startIndex: Int = 0,
-    textModifier: Modifier = Modifier,
-    textStyle: TextStyle = LocalTextStyle.current,
-) {
-    val listScrollCount = items.size
-
-    fun getItem(index: Int) = items[index]
-
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = startIndex)
-
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
-
-    val itemHeightPixels = remember { mutableStateOf(0) }
-    val itemHeightDp = pixelsToDp(itemHeightPixels.value)
-
-    val fadingEdgeGradient = remember {
-        Brush.verticalGradient(
-            0f to Color.Transparent,
-            0.5f to Color.Black,
-            1f to Color.Transparent
-        )
-    }
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .map { index ->
-                getItem(index)
-            }
-            .distinctUntilChanged()
-            .collect { item -> state.selectedItem = item }
-    }
-
-    Box(modifier = modifier) {
-        LazyColumn(
-            state = listState,
-            flingBehavior = flingBehavior,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(itemHeightDp * visibleItemsCount)
-                .fadingEdge(fadingEdgeGradient)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(itemHeightDp))
-            }
-            items(count = listScrollCount) { index ->
-                Log.d("@@@@@@", "TdrTimePicker >> index >> $index")
-                Text(
-                    text = getItem(index),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = textStyle,
-                    modifier = Modifier
-                        .onSizeChanged { size -> itemHeightPixels.value = size.height }
-                        .then(textModifier)
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(itemHeightDp))
-            }
-        }
-
-    }
-
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog(
+fun TdrTimePickerDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     timePickerState: TimePickerState,
