@@ -145,6 +145,8 @@ class GroupActivity : BaseActivity(){
                                         rememberGroupFlag.value = GroupScreenFlag.DETAIL.name
                                         rememberNeedRefresh.value = true
                                     },
+                                    sharedTransitionScope = this@SharedTransitionLayout,
+                                    animatedVisibilityScope = this@AnimatedContent,
                                     finishedDeleteAction = {
                                         setResult(RESULT_OK)
                                         finish()

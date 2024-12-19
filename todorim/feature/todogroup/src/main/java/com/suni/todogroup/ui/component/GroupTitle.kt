@@ -31,6 +31,7 @@ fun GroupTitle(
     context: Context,
     modifier: Modifier,
     isCreateMode: Boolean = true,
+    modifyModeCloseAction: () -> Unit = {},
 ) {
     val strTitle =
         if (isCreateMode) stringResource(id = R.string.create_group_title)
@@ -47,7 +48,13 @@ fun GroupTitle(
             style = MaterialTheme.typography.bodyLarge,
             color = colorResource(com.suni.ui.R.color.tdr_default),
         )
-        IconButton(onClick = { context.findActivity().finish() }) {
+        IconButton(onClick = {
+            if (isCreateMode) {
+                context.findActivity().finish()
+            } else {
+                modifyModeCloseAction()
+            }
+        }) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = "Close Group",
