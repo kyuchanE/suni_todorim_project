@@ -12,3 +12,4 @@
 
 ### Android Developer 사이트에서 소개하는 'Guide to app architecture'를 적용
 - [Android Developer -Guide to app architecture](https://developer.android.com/topic/architecture)
+<img src = "https://developer.android.com/static/topic/libraries/architecture/images/mad-arch-overview.png" width ="500" height = "300"/>
