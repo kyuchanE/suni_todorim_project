@@ -1,9 +1,8 @@
 package com.suni.domain.usecase
 
 import com.suni.data.model.GroupEntity
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.RealmResults
+import com.suni.data.repository.GroupDataRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
@@ -11,13 +10,13 @@ import javax.inject.Inject
  * 24.09.04 Create class - Q
  */
 class GetGroupDataUseCase @Inject constructor(
-    private val realm: Realm,
+    private val groupDataRepository: GroupDataRepository,
 ) {
 
-    fun getGroupsAll(): RealmResults<GroupEntity> =
-        realm.query<GroupEntity>().find()
+    suspend fun getGroupsAll(): Flow<MutableList<GroupEntity>> =
+        groupDataRepository.getGroupData()
 
-    fun getGroupById(groupId: Int): RealmResults<GroupEntity> =
-        realm.query<GroupEntity>("groupId = $0", groupId).find()
+    suspend fun getGroupById(groupId: Int): Flow<GroupEntity> =
+        groupDataRepository.getGroupData(groupId)
 
 }

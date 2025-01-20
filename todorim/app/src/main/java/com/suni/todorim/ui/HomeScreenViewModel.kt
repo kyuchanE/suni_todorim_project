@@ -1,6 +1,5 @@
 package com.suni.todorim.ui
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,14 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suni.data.model.GroupEntity
 import com.suni.data.model.TodoEntity
-import com.suni.domain.L
 import com.suni.domain.usecase.GetGroupDataUseCase
 import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
 import com.suni.domain.usecase.WriteGroupDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -89,8 +88,12 @@ class HomeScreenViewModel @Inject constructor(
      */
     private fun fetchAll() {
         viewModelScope.launch {
-            fetchGroupData()
-            fetchTodoData()
+            state = state.copy(
+                isLoading = true
+            )
+
+            fetchGroupData().join()
+            fetchTodoData().join()
         }
 
     }
@@ -100,14 +103,15 @@ class HomeScreenViewModel @Inject constructor(
      */
     private fun fetchTodoData() : Job = viewModelScope.launch {
         val todoList = mutableListOf<TodoEntity>()
-        val realmResult = getTodoDataUseCase.getTodoAll()
 
-        if (realmResult.isNotEmpty()) {
-            realmResult.forEach { todoEntity ->
+        getTodoDataUseCase.getTodoAll().collectLatest { todoEntityList ->
+            todoEntityList.forEach { todoEntity ->
                 todoList.add(todoEntity)
             }
         }
+
         state = state.copy(
+            isLoading = false,
             todoLists = todoList
         )
     }
@@ -117,40 +121,42 @@ class HomeScreenViewModel @Inject constructor(
      */
     private fun fetchGroupData() : Job = viewModelScope.launch {
         val groupList = mutableListOf<GroupEntity>()
-        val realmResult = getGroupDataUseCase.getGroupsAll()
         var maxGroupId = 0
         var maxOrder = 0
 
-        if (realmResult.isEmpty()) {
-            addGroupItem(
-                HomeScreenEvents.AddGroupItem(
-                    groupId = 1,
-                    order = 1,
-                    title = "Default",
-                    appColorIndex = 0,
+        getGroupDataUseCase.getGroupsAll().collectLatest { resultList ->
+            if (resultList.isEmpty()) {
+                addGroupItem(
+                    HomeScreenEvents.AddGroupItem(
+                        groupId = 1,
+                        order = 1,
+                        title = "Default",
+                        appColorIndex = 0,
+                    )
                 )
-            )
-        } else {
-            realmResult.forEach { groupEntity ->
-                groupList.add(groupEntity)
-                if (maxGroupId < groupEntity.groupId)
-                    maxGroupId = groupEntity.groupId
-                if (maxOrder < groupEntity.order)
-                    maxOrder = groupEntity.order
+            } else {
+                resultList.forEach { groupEntity ->
+                    groupList.add(groupEntity)
+                    if (maxGroupId < groupEntity.groupId)
+                        maxGroupId = groupEntity.groupId
+                    if (maxOrder < groupEntity.order)
+                        maxOrder = groupEntity.order
+                }
+
+                groupList.sortBy { it.groupId }
+                // Default 페이지 생성 아이템 추가
+                groupList.add(
+                    GroupEntity()
+                )
+
+                state = state.copy(
+                    groupLists = groupList,
+                    maxGroupId = maxGroupId + 1,
+                    maxOrder = maxOrder + 1,
+                )
             }
-
-            groupList.sortBy { it.groupId }
-            // Default 페이지 생성 아이템 추가
-            groupList.add(
-                GroupEntity()
-            )
-
-            state = state.copy(
-                groupLists = groupList,
-                maxGroupId = maxGroupId + 1,
-                maxOrder = maxOrder + 1,
-            )
         }
+
     }
 
     fun changeBgColor(event: HomeScreenEvents.ChangeBackground) {

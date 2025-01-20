@@ -1,10 +1,8 @@
 package com.suni.domain.usecase
 
 import com.suni.data.model.TodoEntity
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
-import io.realm.kotlin.query.RealmResults
-import io.realm.kotlin.query.Sort
+import com.suni.data.repository.TodoDataRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
@@ -12,16 +10,16 @@ import javax.inject.Inject
  * 24.09.019 Create class - Q
  */
 class GetTodoDataUseCase @Inject constructor(
-    private val realm: Realm,
+    private val todoDataRepository: TodoDataRepository,
 ) {
 
-    fun getTodoAll(): RealmResults<TodoEntity> =
-        realm.query<TodoEntity>().find()
+    suspend fun getTodoAll(): Flow<MutableList<TodoEntity>> =
+        todoDataRepository.getTodoData()
 
-    fun getTodoByGroupId(groupId: Int): RealmResults<TodoEntity> =
-        realm.query<TodoEntity>("groupId = $0", groupId).sort("todoId", Sort.ASCENDING).find()
+    suspend fun getTodoByGroupId(groupId: Int): Flow<MutableList<TodoEntity>> =
+        todoDataRepository.getTodoDataByGroupId(groupId)
 
-    fun getTodoByTodoId(todoId: Int): RealmResults<TodoEntity> =
-        realm.query<TodoEntity>("todoId = $0", todoId).find()
+    suspend fun getTodoByTodoId(todoId: Int): Flow<TodoEntity> =
+        todoDataRepository.getTodoData(todoId)
 
 }

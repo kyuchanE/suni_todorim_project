@@ -1,7 +1,7 @@
 package com.suni.domain.usecase
 
 import com.suni.data.model.GroupEntity
-import io.realm.kotlin.Realm
+import com.suni.data.repository.GroupDataRepository
 import javax.inject.Inject
 
 /**
@@ -9,13 +9,11 @@ import javax.inject.Inject
  * 24.09.04 Create class - Q
  */
 class WriteGroupDataUseCase @Inject constructor(
-    private val realm: Realm
+    private val groupDataRepository: GroupDataRepository,
 ) {
     operator fun invoke(
         groupData: GroupEntity
     ) {
-        realm.writeBlocking {
-            copyToRealm(groupData)
-        }
+        groupDataRepository.writeGroupData(groupData)
     }
 }

@@ -1,8 +1,6 @@
 package com.suni.domain.usecase
 
-import com.suni.data.model.GroupEntity
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
+import com.suni.data.repository.GroupDataRepository
 import javax.inject.Inject
 
 /**
@@ -10,12 +8,9 @@ import javax.inject.Inject
  * 24.09.30 Create class - Q
  */
 class DeleteGroupDataUseCase @Inject constructor(
-    private val realm: Realm
+    private val groupDataRepository: GroupDataRepository
 ) {
     operator fun invoke(groupId: Int) {
-        realm.writeBlocking {
-            val resultQuery = this.query<GroupEntity>("groupId == $0", groupId)
-            delete(resultQuery)
-        }
+        groupDataRepository.deleteGroupData(groupId)
     }
 }

@@ -33,10 +33,14 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    hilt {
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
-
+    implementation(projects.core.common)
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -46,6 +50,7 @@ dependencies {
 
     // Realm
     implementation(libs.realm.base)
+    implementation(libs.realm.sync)
 
     // Dagger Hilt
     implementation(libs.navigation.compose)

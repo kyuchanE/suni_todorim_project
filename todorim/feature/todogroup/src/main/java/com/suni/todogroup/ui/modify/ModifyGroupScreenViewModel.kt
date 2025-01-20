@@ -6,12 +6,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suni.data.model.GroupEntity
+import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.DeleteGroupDataUseCase
 import com.suni.domain.usecase.DeleteTodoDataUseCase
 import com.suni.domain.usecase.GetGroupDataUseCase
 import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateGroupDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,11 +52,13 @@ class ModifyGroupScreenViewModel @Inject constructor(
 
     private fun getGroupData(event: ModifyGroupScreenEvents.LoadGroupData) {
         viewModelScope.launch {
-            val groupEntity = getGroupDataUseCase.getGroupById(event.groupId).first()
-            state = state.copy(
-                groupData = groupEntity,
-                colorIndex = groupEntity.appColorIndex
-            )
+            getGroupDataUseCase.getGroupById(event.groupId).collectLatest { groupEntity ->
+                state = state.copy(
+                    groupData = groupEntity,
+                    colorIndex = groupEntity.appColorIndex
+                )
+
+            }
         }
     }
 
@@ -99,7 +103,10 @@ class ModifyGroupScreenViewModel @Inject constructor(
             val targetGroupId = event.groupId
             deleteGroupDataUseCase(targetGroupId)
             // 그룹 하위 할 일 제거
-            val todoEntityList = getTodoDataUseCase.getTodoByGroupId(targetGroupId)
+            val todoEntityList = mutableListOf<TodoEntity>()
+            getTodoDataUseCase.getTodoByGroupId(targetGroupId).collectLatest { resultTodoList ->
+                todoEntityList.addAll(resultTodoList)
+            }
             todoEntityList.forEach { todoEntity ->
                 deleteTodoDataUseCase(todoEntity.todoId)
             }

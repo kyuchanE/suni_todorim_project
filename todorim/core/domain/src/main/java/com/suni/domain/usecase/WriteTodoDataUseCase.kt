@@ -1,11 +1,7 @@
 package com.suni.domain.usecase
 
-import android.app.AlarmManager
-import android.content.Context
 import com.suni.data.model.TodoEntity
-import com.suni.domain.setAlarmDateTime
-import dagger.hilt.android.qualifiers.ApplicationContext
-import io.realm.kotlin.Realm
+import com.suni.data.repository.TodoDataRepository
 import javax.inject.Inject
 
 /**
@@ -13,22 +9,12 @@ import javax.inject.Inject
  * 24.09.24 Create class - Q
  */
 class WriteTodoDataUseCase @Inject constructor(
-    @ApplicationContext val context: Context,
-    private val realm: Realm,
-    private val scheduleAlarmManager: AlarmManager,
+    private val todoDataRepository: TodoDataRepository,
 ) {
     operator fun invoke(
         todoData: TodoEntity
     ) {
-        realm.writeBlocking {
-            copyToRealm(todoData)
-
-            if (todoData.isDateNoti) {
-                // 날짜 시간 알림
-                todoData.setAlarmDateTime(context, scheduleAlarmManager)
-            }
-
-        }
+        todoDataRepository.writeTodoData(todoData)
     }
 
 }

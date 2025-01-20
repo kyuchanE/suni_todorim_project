@@ -9,6 +9,7 @@ import com.suni.data.model.TodoEntity
 import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,12 +65,10 @@ class ModifyTodoScreenViewModel @Inject constructor(
      */
     private fun getTodoData(event: ModifyTodoScreenEvents.LoadTodoData) {
         viewModelScope.launch {
-            val result = getTodoDataUseCase.getTodoByTodoId(event.todoId)
-
-            if (result.isNotEmpty()) {
-               state = state.copy(
-                   todoData = result.first()
-               )
+            getTodoDataUseCase.getTodoByTodoId(event.todoId).collectLatest { resultTodoEntity ->
+                state = state.copy(
+                    todoData = resultTodoEntity
+                )
             }
         }
     }

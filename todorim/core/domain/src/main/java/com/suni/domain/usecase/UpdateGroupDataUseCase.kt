@@ -1,9 +1,7 @@
 package com.suni.domain.usecase
 
 import com.suni.data.model.GroupEntity
-import com.suni.data.model.TodoEntity
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
+import com.suni.data.repository.GroupDataRepository
 import javax.inject.Inject
 
 /**
@@ -11,20 +9,11 @@ import javax.inject.Inject
  * 24.09.26 Create class - Q
  */
 class UpdateGroupDataUseCase @Inject constructor(
-    private val realm: Realm
+    private val groupDataRepository: GroupDataRepository,
 ){
-    operator fun invoke(
-        groupData: GroupEntity
+    suspend operator fun invoke(
+        groupData: GroupEntity,
     ) {
-        realm.query<GroupEntity>("groupId == $0", groupData.groupId)
-            .first()
-            .find()
-            ?.also { groupEntity ->
-                realm.writeBlocking {
-                    findLatest(groupEntity)?.title = groupData.title
-                    findLatest(groupEntity)?.order = groupData.order
-                    findLatest(groupEntity)?.appColorIndex = groupData.appColorIndex
-                }
-            }
+        groupDataRepository.updateGroupData(groupData)
     }
 }

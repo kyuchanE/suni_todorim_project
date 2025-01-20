@@ -123,7 +123,11 @@ private fun HomeBody(
                         // 페이지 생성
                         0
                     } else {
-                        vm.state.groupLists[page].appColorIndex
+                        if (vm.state.groupLists.size > 0) {
+                            vm.state.groupLists[page].appColorIndex
+                        } else {
+                            0
+                        }
                     }
                 )
             )

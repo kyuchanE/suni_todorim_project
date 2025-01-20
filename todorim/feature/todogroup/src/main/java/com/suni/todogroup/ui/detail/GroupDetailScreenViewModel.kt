@@ -13,6 +13,7 @@ import com.suni.domain.usecase.GetTodoDataUseCase
 import com.suni.domain.usecase.UpdateTodoDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -78,22 +79,28 @@ class GroupDetailScreenViewModel @Inject constructor(
     private fun fetchGroupItem(event: GroupDetailScreenEvents.LoadGroupData) {
         viewModelScope.launch {
             // fetch Group
-            val resultGroupItem = getGroupDataUseCase.getGroupById(event.groupId)
-            if (resultGroupItem.isNotEmpty()) {
+            getGroupDataUseCase.getGroupById(event.groupId).collectLatest { resultGroupItem ->
                 state = state.copy(
-                    groupData = resultGroupItem.first()
+                    groupData = resultGroupItem
                 )
             }
             // fetch Group TodoList
             var todoMaxId = -1
-            getTodoDataUseCase.getTodoAll().forEach {
-                if (it.todoId > todoMaxId) {
-                    todoMaxId = it.todoId
+            getTodoDataUseCase.getTodoAll().collectLatest { resultTodoList ->
+                resultTodoList.forEach { todoEntity ->
+                    if (todoEntity.todoId > todoMaxId) {
+                        todoMaxId = todoEntity.todoId
+                    }
                 }
             }
 
+            val todoDataList = mutableListOf<TodoEntity>()
+            getTodoDataUseCase.getTodoByGroupId(event.groupId).collectLatest { resultTodoList ->
+                todoDataList.addAll(resultTodoList)
+            }
+
             state = state.copy(
-                todoDataList = getTodoDataUseCase.getTodoByGroupId(event.groupId).toMutableList(),
+                todoDataList = todoDataList,
                 todoMaxId = todoMaxId + 1,
                 isNeedRefreshHome =
                 if (event.isNeedRefresh) {
