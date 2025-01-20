@@ -8,4 +8,7 @@
 
 👉 Project Architecture
 -
+![Image](https://github.com/user-attachments/assets/b45e4e13-72e8-44da-964b-44879c88b305)
 
+### Android Developer 사이트에서 소개하는 'Guide to app architecture'를 적용
+- [Android Developer -Guide to app architecture](https://developer.android.com/topic/architecture)
