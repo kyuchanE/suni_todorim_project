@@ -20,6 +20,7 @@
 - 코드 재사용성의 이점이 있다.
 
 #### 📫 Navigator
-- 멀티 모듈간의 소통과 호출을 위하여 생성 </br>
+- 멀티 모듈간의 소통과 호출을 위하여 생성
+- Navigator Module에 Navigator를 각 Feature Module에서 상속 받아 멀티 모듈 사이의 호출에 사용했습니다. </br>
 
 [다중 모듈 프로젝트](https://developer.android.com/guide/navigation/integrations/multi-module)
